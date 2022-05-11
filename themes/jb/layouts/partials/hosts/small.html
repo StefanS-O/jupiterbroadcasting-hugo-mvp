@@ -1,3 +1,13 @@
-{{ .host.name }}
-{{ .host.bio }}
-<img src="{{ .host.avatar }}">
+<div class="card">
+  <div class="card-image">
+    <figure class="image">
+      <img src="{{ .host.avatar }}" alt="{{ .host.name }}">
+    </figure>
+  </div>
+  <div class="card-content">
+    <div class="content">
+      <strong>{{ .host.name }}</strong><br/>
+      {{ .host.bio }}
+    </div>
+  </div>
+</div>

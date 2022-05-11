@@ -1,8 +1,15 @@
-Our shows are licensed under Creative Commons BY-SA 4.0
 
 
+<footer class="footer">
+  <div class="container">
+      <div class="columns is-vcentered">
+        Our shows are licensed under Creative Commons BY-SA 4.0
+      </div>
+  </div>
+ </footer>
 
 {{ $main := resources.Get "js/main.js" }}
 {{ $navigation := resources.Get "js/navigation.js" }}
-{{ $defaultJS := slice $main $navigation| resources.Concat "js/global.js" | resources.Minify | resources.Fingerprint }}
+{{ $video := resources.Get "js/video.min.js" }}
+{{ $defaultJS := slice $main $navigation $video | resources.Concat "js/global.js" | resources.Minify | resources.Fingerprint }}
 <script src="{{ $defaultJS.Permalink }}"></script>

@@ -14,3 +14,16 @@ theme = 'jb'
   tag = "tags"
   category = "categories"
   author = "hosts"
+
+# Main Menu
+[[Menu.Main]]
+    name = "Jupiter Broadcasting"
+    identifier = "home"
+    url = "/"
+    weight =-100
+
+[[Menu.Main]]
+    name = "Shows"
+    identifier = "shows"
+    url = "/show"
+    weight =-90
