@@ -9,3 +9,8 @@ theme = 'jb'
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  author = "hosts"

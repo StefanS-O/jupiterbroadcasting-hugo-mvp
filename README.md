@@ -6,15 +6,15 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 
 * Static Site using Hugo
 * Complete publishing workflow using Github and Github Actions
-* RSS feed generation
 * Template using SCSS (without node dependencies using Hugo extended)
 * only Vanilla JS is used (single files with concat workflow)
-* Highly configurable with config.toml
+* Highly configurable with config.toml and config folder
 * data structure for hosts
 * Multishow capable
 
 ## ToDo
 
+* RSS feed generation
 * Integrate Gitlab Actions
 * Search Function (probably Lunr)
 * Contact Form (?)
@@ -40,4 +40,4 @@ tbd
 I took parts of the functionality from the Castanet Theme: https://github.com/mattstratton/castanet
 Mainly the RSS feed generation and managing of hosts / guests.
 
-Time spend so far: 1.5h
+Time spend so far: 3h

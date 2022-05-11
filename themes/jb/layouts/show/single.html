@@ -1,17 +1,19 @@
 {{ define "main" }}
 
   <h1>{{ .Title }}</h1>
-
+  {{ partial "episode/youtube.html" . }}
   {{ .Description }}
 
-  {{.Params.podcast_duration }}
+  {{ partial "episode/audioplayer.html" . }}
 
-  ## Hosts
+  <h2>Hosts</h2>
 
 
-
-  {{ range $.Params.hosts }}
-     {{ partial "hosts/small.html" . }}
+  {{ range $index, $hostname := .Params.hosts }}
+    {{ $host := index $.Site.Data.hosts $hostname }}
+    {{ partial "hosts/small.html" (dict "context" . "host" $host) }}
   {{ end }}
 
-{{ end }}
+
+
+{{end}}
