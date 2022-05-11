@@ -9,6 +9,8 @@ hosts = ["chrislas","michael"]
 
 header_image = "/shows/coderradio.png"
 
+show = "Coder Radio"
+episode = 465
 podcast_duration = "0:59:47"
 podcast_file = "https://aphid.fireside.fm/d/1437767933/b44de5fa-47c1-4e94-bf9e-c72f8d1c8f5d/a74bdeb8-2f86-460f-90d8-31df94ce5a74.mp3"
 podcast_bytes = "50714395"
