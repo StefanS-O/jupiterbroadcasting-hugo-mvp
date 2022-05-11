@@ -1,0 +1,17 @@
+{{ define "main" }}
+
+  <h1>{{ .Title }}</h1>
+
+  {{ .Description }}
+
+  {{.Params.podcast_duration }}
+
+  ## Hosts
+
+
+
+  {{ range $.Params.hosts }}
+     {{ partial "hosts/small.html" . }}
+  {{ end }}
+
+{{ end }}
