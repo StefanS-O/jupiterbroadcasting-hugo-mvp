@@ -1,13 +1,9 @@
 {{ define "main" }}
   {{ range $index, $episode := first 10 (where .Site.Pages "Section" "show") }}
         {{ if ne  $episode.Kind "section" }}
-            {{ if (ne $index 0) }}
-                <div class="column is-6 is-4-fullhd is-4-desktop is-12-mobile"  style="display: flex;">
-                    <img src="{{.Params.header_image }}">
-                    {{.Title}}
-                    {{.Description}}
-                </div>
-            {{ end }}
+              <div class="column is-6 is-4-fullhd is-4-desktop is-12-mobile"  style="display: flex;">
+                  {{ partial "episode/preview.html" . }}
+              </div>
         {{ end }}
     {{ end }}
 {{ end }}

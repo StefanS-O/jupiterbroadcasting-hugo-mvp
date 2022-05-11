@@ -1,5 +1,6 @@
 +++
 title = "Mike's Magic Mom"
+description = "After solving a moral dilemma in our particular kind of way, Mike dishes on some ambitious plans that might kick off a new era of development for him."
 date = "2022-05-10T04:10:01-05:00"
 draft = false
 categories = ["Coder Radio","Featured", "Video"]

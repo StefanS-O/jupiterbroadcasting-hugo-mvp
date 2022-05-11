@@ -4,7 +4,7 @@
 
   {{ partial "meta.html" . }}
 
-  {{ $sass := resources.Get "css/main.scss" }}
+  {{ $sass := resources.Get "css/main.sass" }}
   {{ $style := $sass | resources.ToCSS | resources.Minify }}
   <link rel="stylesheet" href="{{ $style.RelPermalink }}">
 
