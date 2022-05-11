@@ -20,7 +20,11 @@ video_file = "http://www.podtrac.com/pts/redirect.mp4/201406.jb-dl.cdn.scaleengi
 
 +++
 
-Mike shares a tale involving a comedy of errors, and we ponder a new reusable culture around tech.
-
 
 ## Episode Links
+
+* [Episode 5: End of the Petrodollar - Weirdly, not alarmist](https://bitcoindadpod.fireside.fm/5)
+* [Episode 14: Can't spell stagflation without oil and gas](https://bitcoindadpod.fireside.fm/14)
+* [Leaf Node Monitoring - Leaf Node ](https://www.leafnode.nl/) — Open Source (GPLv3) Network Monitoring for Windows, Linux & Android. Written in C++ & Qt 5. Perfect to run on your desktop and monitor your servers. Simple setup, auto-detects running services, runs checks concurrently, open port scanning and alerting. Hosts with failed checks automatically rise to the top, everything that’s okay stays nice and green.
+* [Selling my own GPL software part 3, prior art (existing GPL software for sale)](https://raymii.org/s/blog/Existing_GPL_software_for_sale.html)
+* [Python.NET](https://pythonnet.github.io/) — Python.NET provides a powerful application scripting tool for .NET developers. Using this package you can script .NET applications or build entire applications in Python, using .NET services and components written in any language that targets the CLR (C#, VB.NET, F#, C++/CLI).

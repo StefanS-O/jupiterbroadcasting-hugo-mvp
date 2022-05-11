@@ -40,4 +40,4 @@ tbd
 I took parts of the functionality from the Castanet Theme: https://github.com/mattstratton/castanet
 Mainly the RSS feed generation and managing of hosts / guests.
 
-Time spend so far: 3h
+Time spend so far: 6h
