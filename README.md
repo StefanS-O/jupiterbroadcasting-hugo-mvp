@@ -13,6 +13,14 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 * data structure for hosts
 * Multishow capable
 
+## ToDo
+
+* Integrate Gitlab Actions
+* Search Function (probably Lunr)
+* Contact Form (?)
+* adding more content
+* write better docs
+
 ## Setup
 
 ### Using Hugo binary
@@ -26,3 +34,10 @@ Start the development Server (rebuild on every filesystem change)
 ### Using Docker
 
 tbd
+
+## Credits
+
+I took parts of the functionality from the Castanet Theme: https://github.com/mattstratton/castanet
+Mainly the RSS feed generation and managing of hosts / guests.
+
+Time spend so far: 1.5h

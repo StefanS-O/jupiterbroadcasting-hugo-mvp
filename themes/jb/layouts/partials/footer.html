@@ -1,0 +1,4 @@
+{{ $main := resources.Get "js/main.js" }}
+{{ $cookie := resources.Get "js/cookie-banner.js" }}
+{{ $defaultJS := slice $main | resources.Concat "js/main.js" | resources.Minify | resources.Fingerprint }}
+<script src="{{ $defaultJS.Permalink }}"></script>
