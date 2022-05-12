@@ -6,7 +6,7 @@ draft = false
 categories = ["Linux Action News","Featured", "Video"]
 tags = ["gaming","gaming on linux","vulkan"]
 hosts = ["chrislas","joe"]
-
+sponsors = ["ting","linode"]
 header_image = "/shows/linux-action-news.png"
 
 show = "Linux Action News"

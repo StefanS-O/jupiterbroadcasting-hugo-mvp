@@ -15,11 +15,12 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 * Highly configurable with config.toml and config folder
 * data structure for hosts
 * Multishow capable
+* Integrate Gitlab Actions for deployment
+* Tags
 
 ## ToDo
 
 * RSS feed generation
-* Integrate Gitlab Actions
 * Search Function (probably Lunr)
 * Contact Form (?)
 * adding more content

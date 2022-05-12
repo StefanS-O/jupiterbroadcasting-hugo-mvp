@@ -34,6 +34,28 @@
             </div>
           </div>
         </section>
+
+      {{ with .Params.sponsors }}
+
+        <h2>Sponsors</h2>
+
+        <section class="section sponsor-list">
+          <div class="container">
+             <div class="columns is-multiline">
+              {{ range $index, $sponsorname := . }}
+                {{ $sponsor := index $.Site.Data.sponsors $sponsorname }}
+                  <div class="column is-6 is-4-fullhd is-4-desktop is-12-mobile"  style="display: flex;">
+                    {{ partial "sponsor/small.html" (dict "context" . "sponsor" $sponsor) }}
+                  </div>
+              {{ end }}
+            </div>
+          </div>
+        </section>
+
+
+      {{ end }}
+
+
     </div>
   </div>
 {{end}}
