@@ -17,7 +17,6 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 * Video player
 * HTML5 audio player
 * Multishow capable
-* Integrate Gitlab Actions for deployment
 * Tags (via frontmatter)
 * Guests (via data folder and frontmatter)
 * Sponsors (via data folder and frontmatter)
@@ -44,9 +43,15 @@ Start the development Server (rebuild on every filesystem change)
 
 tbd
 
+## Deployment
+
+Deployment is done with Github Actions, see workflow file in `.github/workflows/main.yml`
+At the moment it is only triggered when something in the `main` branch is changing, but it can also be set up to run at certain times.
+This would also enable scheduled publishing, since Hugo per default only build pages which have set `date` in frontmatter to <= now
+
 ## Credits
 
 I took parts of the functionality from the Castanet Theme: https://github.com/mattstratton/castanet
 Mainly the RSS feed generation and managing of hosts / guests.
 
-Time spend so far: 11h
+Time spend so far: 13h
