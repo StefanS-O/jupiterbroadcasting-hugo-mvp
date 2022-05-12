@@ -2,7 +2,7 @@
 
 Build with Hugo and deployed with Github Actions
 
-Demo: htps://jb.codefighters.net
+Demo: https://jb.codefighters.net
 
 https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#discussioncomment-2731384
 
