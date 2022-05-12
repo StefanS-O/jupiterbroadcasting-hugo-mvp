@@ -1,26 +1,27 @@
 +++
-title = "Mike's Magic Mom"
-description = "After solving a moral dilemma in our particular kind of way, Mike dishes on some ambitious plans that might kick off a new era of development for him."
-date = "2022-05-10T04:10:01-05:00"
+title = "Linux Action News"
+description = "NVIDIA has announced its plans for an open-source GPU driver. Christian Schaller, the Director for Desktop, Graphics, Infotainment and more at Red Hat, gives us the inside scoop on this historic announcement."
+date = "2022-05-11T04:10:01-05:00"
 draft = false
-categories = ["Coder Radio","Featured", "Video"]
-tags = ["zsh"]
+categories = ["Linux Action News","Featured", "Video"]
+tags = ["gaming","gaming on linux","vulkan"]
 hosts = ["chrislas","michael"]
 
-header_image = "/shows/coderradio.png"
+header_image = "/shows/linux-action-news.png"
 
-show = "Coder Radio"
-episode = 465
+show = "Linux Action News"
+episode = 240
 podcast_duration = "0:59:47"
-podcast_file = "https://aphid.fireside.fm/d/1437767933/b44de5fa-47c1-4e94-bf9e-c72f8d1c8f5d/a74bdeb8-2f86-460f-90d8-31df94ce5a74.mp3"
+podcast_file = "http://www.podtrac.com/pts/redirect.mp3/chtbl.com/track/392D9/aphid.fireside.fm/d/1437767933/dec90738-e640-45e5-b375-4573052f4bf4/57f4ff56-99d1-45a8-91c8-78c7652eb36f.mp3"
 podcast_bytes = "50714395"
 
-youtube_link = "https://youtu.be/aNGPvFClmQE"
-video_file = "http://www.podtrac.com/pts/redirect.mp4/201406.jb-dl.cdn.scaleengine.net/coderradio/2022/cr-0465.mp4"
+youtube_link = "https://youtu.be/uccdgoU47MQ"
+video_file = "http://www.podtrac.com/pts/redirect.mp4/201406.jb-dl.cdn.scaleengine.net/lan/2022/lan-0240.mp4"
 
 +++
 
-After solving a moral dilemma in our particular kind of way, Mike dishes on some ambitious plans that might kick off a new era of development for him.
-
-
 ## Episode Links
+
+* [Why is the open source driver release from NVidia so important for Linux? | Christian F.K. Schaller](https://blogs.gnome.org/uraeus/2022/05/11/why-is-the-open-source-driver-release-from-nvidia-so-important-for-linux/) — Today NVidia announced that they are releasing an open source kernel driver for their GPUs, so I want to share with you some background information and how this will impact Linux graphics and compute going forward.
+* [NVIDIA Releases Open-Source GPU Kernel Modules](https://developer.nvidia.com/blog/nvidia-releases-open-source-gpu-kernel-modules/) — This release is a significant step toward improving the experience of using NVIDIA GPUs in Linux, for tighter integration with the OS and for developers to debug, integrate, and contribute back.
+* [NVIDIA Transitioning To Official, Open-Source Linux GPU Kernel Driver](https://www.phoronix.com/scan.php?page=article&item=nvidia-open-kernel&num=1) — NVIDIA's open kernel modules is already considered "production ready, opt-in" for data center GPUs. For GeForce and workstation GPUs, the open kernel module code is considered "alpha quality" but will be ramped up moving forward with future releases.
