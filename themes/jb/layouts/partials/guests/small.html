@@ -1,0 +1,13 @@
+<div class="card">
+  <div class="card-image">
+    <figure class="image">
+      <img src="{{ .guest.avatar }}" alt="{{ .guest.name }}">
+    </figure>
+  </div>
+  <div class="card-content">
+    <div class="content">
+      <a href="/guests/{{ .guest.username }}"><strong>{{ .guest.name }}</strong></a><br/>
+      {{ .guest.bio }}
+    </div>
+  </div>
+</div>

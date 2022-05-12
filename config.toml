@@ -14,6 +14,7 @@ theme = 'jb'
   tag = "tags"
   category = "categories"
   host = "hosts"
+  guest = "guests"
 
 # Main Menu
 [[Menu.Main]]
