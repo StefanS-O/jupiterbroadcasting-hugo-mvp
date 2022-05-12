@@ -13,10 +13,14 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 * Template using SCSS (without node dependencies using Hugo extended)
 * only Vanilla JS is used (single files with concat workflow)
 * Highly configurable with config.toml and config folder
-* data structure for hosts
+* Hosts (via data folder and frontmatter)
+* Video player
+* HTML5 audio player
 * Multishow capable
 * Integrate Gitlab Actions for deployment
-* Tags
+* Tags (via frontmatter)
+* Guests (via data folder and frontmatter)
+* Sponsors (via data folder and frontmatter)
 
 ## ToDo
 
@@ -45,4 +49,4 @@ tbd
 I took parts of the functionality from the Castanet Theme: https://github.com/mattstratton/castanet
 Mainly the RSS feed generation and managing of hosts / guests.
 
-Time spend so far: 9h
+Time spend so far: 11h
