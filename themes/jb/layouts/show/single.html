@@ -4,6 +4,14 @@
         <h1>{{ .Title }} | {{.Params.show}} {{.Params.episode}}</h1>
         <strong>{{ .Date.Day }}  {{ .Date.Month }} {{ .Date.Year }}</strong><br/>
         {{ partial "episode/videoplayer.html" . }}
+
+        {{ with .Params.tags }}
+          <div class="tags">
+            {{ partial "episode/tags.html" . }}
+          </div>
+        {{ end }}
+
+
         {{ .Description }}
 
         {{ partial "episode/audioplayer.html" . }}

@@ -2,14 +2,3 @@ keywords = "Linux, FreeBSD, howto, Ubuntu, Arch, tech news, HD, app review, Syst
 description = "Independent coverage of Linux, BSD, Open Source, System Administration, Information Security, News, Software Development and Discussion."
 author = "Jupiter Broadcasting"
 ogimage = "/images/jupiter-broadcasting.png" # Open Graph default image
-
-
-[Authors.chrislas]
-  name = "Chris Fisher"
-  bio = "Who knows what to write here?"
-  avatar = "/hosts/chris_fisher.jpeg"
-
-[Authors.michael]
-  name = "Michael Dominick"
-  bio = "Co-Host of Coder Radio"
-  avatar = "/hosts/michael_dominick.jpeg"
