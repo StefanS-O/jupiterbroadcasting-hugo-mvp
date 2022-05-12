@@ -1,0 +1,42 @@
+{{ define "main" }}
+  <div class="container">
+      <div class="content">
+        {{ $host := index $.Site.Data.hosts $.Title }}
+
+        <h1 class="title">{{ $host.name}}</h1>
+        {{ $host.bio}}
+        <img src="{{ $host.avatar}}">
+        <h2>Shows with {{ $host.name}}</h2>
+
+        {{ range $key, $taxonomy := .Site.Taxonomies.hosts }}
+         {{ if eq $key $.Title }}
+            <ul>
+                {{ range $taxonomy.Pages }}
+                 {{ if eq  .Kind "section" }}
+                     <li hugo-nav="{{ .RelPermalink}}"><a href="{{ .Permalink}}"> {{ .LinkTitle }} </a> </li>
+                 {{ end }}
+                {{ end }}
+            </ul>
+           {{ end }}
+        {{ end }}
+
+          <h2>Latest Episodes with {{ $host.name}}</h2>
+
+         {{ range $key, $taxonomy := .Site.Taxonomies.hosts }}
+          {{ if eq $key $.Title }}
+             <ul>
+                 {{ range $taxonomy.Pages }}
+                  {{ if ne  .Kind "section" }}
+                      <li hugo-nav="{{ .RelPermalink}}"><a href="{{ .Permalink}}"> {{ .LinkTitle }} </a> </li>
+                  {{ end }}
+                 {{ end }}
+             </ul>
+            {{ end }}
+         {{ end }}
+
+
+
+
+    </div>
+  </div>
+{{end}}
