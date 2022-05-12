@@ -1,5 +1,15 @@
 {{ define "main" }}
 
-
+<section class="section episode-list">
+  <div class="container">
+     <div class="columns is-multiline">
+        {{ range .Data.Pages }}
+                    <div class="column is-6 is-4-fullhd is-4-desktop is-12-mobile"  style="display: flex;">
+                        {{ partial "episode/show.html" . }}
+                    </div>
+          {{ end }}
+      </div>
+    </div>
+</section>
 
 {{ end }}

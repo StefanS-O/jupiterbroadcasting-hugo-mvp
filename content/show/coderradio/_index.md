@@ -1,11 +1,13 @@
 +++
 title = "Coder Radio"
+description = "A weekly talk show taking a pragmatic look at the art and business of Software Development and related technologies."
 date = "2022-05-10T04:10:01-05:00"
 draft = false
 categories = ["Coder Radio"]
 
 hosts = ["chrislas","michael"]
 
+header_image = "/shows/coderradio.png"
 
 +++
 
