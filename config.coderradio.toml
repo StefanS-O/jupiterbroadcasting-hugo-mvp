@@ -29,14 +29,20 @@ theme = 'jb'
     url = "/episodes"
     weight =-90
 
+contentDir = "sites/coderradio/content"
 # Module mounts
 [module]
+#[[module.mounts]]
+#  source = 'sites/coderradio/content'
+#  target = 'content'
+# currently it prevents us from mounting sites/coderradio/content directly
+# https://github.com/gohugoio/hugo/issues/7123
 [[module.mounts]]
-  source = 'sites/coderradio'
-  target = 'content'
-  [[module.mounts]]
-    source = 'content/show/coderradio'
-    target = 'content/episodes'
+  source = 'sites/coderradio/content/community'
+  target = 'content/community'
+[[module.mounts]]
+  source = 'content/show/coderradio'
+  target = 'content/episodes'
 [[module.mounts]]
   source = 'static'
   target = 'static'

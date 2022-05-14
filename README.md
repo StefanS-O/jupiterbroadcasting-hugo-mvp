@@ -47,9 +47,19 @@ tbd
 
 `hugo server -D --config config.coderradio.toml`
 
+to clean the module config
+
+`hugo mod clean --all`
+
 build
 
 `hugo -D --config config.coderradio.toml`
+
+Hugo issue currently regarding overlapping mounts
+
+https://github.com/gohugoio/hugo/issues/7123
+
+so for now only subdirectories work
 
 ## Deployment
 

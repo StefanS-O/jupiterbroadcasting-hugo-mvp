@@ -1,6 +1,6 @@
 +++
-title = "This is the index file of "
-description = "This is the Index file"
+title = "Our Cuban Car Moment"
+description = "Mike shares a tale involving a comedy of errors, and we ponder a new reusable culture around tech."
 date = "2022-05-04T04:10:01-05:00"
 draft = false
 categories = ["Coder Radio","Featured", "Video"]
@@ -20,4 +20,4 @@ video_file = "http://www.podtrac.com/pts/redirect.mp4/201406.jb-dl.cdn.scaleengi
 
 +++
 
-This is the startpage
+Community
