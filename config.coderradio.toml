@@ -1,0 +1,54 @@
+baseURL = 'https://cr-jb.codefighters.net/'
+languageCode = 'en-us'
+title = 'Coder Radio'
+
+theme = 'jb'
+
+# Allow HTML in Markdown
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  host = "hosts"
+  guest = "guests"
+
+# Main Menu
+[[Menu.Main]]
+    name = "Coder Radio"
+    identifier = "home"
+    url = "/"
+    weight =-100
+
+[[Menu.Main]]
+    name = "Episodes"
+    identifier = "episodes"
+    url = "/episodes"
+    weight =-90
+
+# Module mounts
+[module]
+[[module.mounts]]
+  source = 'sites/coderradio'
+  target = 'content'
+[[module.mounts]]
+  source = 'static'
+  target = 'static'
+[[module.mounts]]
+  source = 'themes'
+  target = 'themes'
+[[module.mounts]]
+  source = 'data'
+  target = 'data'
+[[module.mounts]]
+  source = 'assets'
+  target = 'assets'
+[[module.mounts]]
+  source = 'i18n'
+  target = 'i18n'
+[[module.mounts]]
+  source = 'archetypes'
+  target = 'archetypes'
