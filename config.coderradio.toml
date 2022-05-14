@@ -34,12 +34,15 @@ theme = 'jb'
 [[module.mounts]]
   source = 'sites/coderradio'
   target = 'content'
+  [[module.mounts]]
+    source = 'content/show/coderradio'
+    target = 'content/episodes'
 [[module.mounts]]
   source = 'static'
   target = 'static'
 [[module.mounts]]
-  source = 'themes'
-  target = 'themes'
+  source = 'layouts'
+  target = 'layouts'
 [[module.mounts]]
   source = 'data'
   target = 'data'

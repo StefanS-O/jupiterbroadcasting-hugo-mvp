@@ -45,7 +45,11 @@ tbd
 
 ### run for different Site
 
-`hugo server -D --config config.coderradio`
+`hugo server -D --config config.coderradio.toml`
+
+build
+
+`hugo -D --config config.coderradio.toml`
 
 ## Deployment
 
