@@ -15,29 +15,13 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build-and-deploy:
+  build-and-deploy-jb:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
     - uses: jakejarvis/hugo-build-action@master  # ...or replace 'master' with a full version tag, such as: v0.64.1
       with:
-        args: --gc -b ${{ secrets.DEPLOY_URL }}
-    - uses: burnett01/rsync-deployments@4.1
-      with:
-       switches: -avzr --delete
-       path: ./public/
-       remote_path: ${{ secrets.DEPLOY_REMOTEPATH }}
-       remote_host: ${{ secrets.DEPLOY_HOST }}
-       remote_port: ${{ secrets.DEPLOY_PORT }}
-       remote_user: ${{ secrets.DEPLOY_USER }}
-       remote_key: ${{ secrets.DEPLOY_KEY }}
-  build-and-deploy-prod:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - uses: jakejarvis/hugo-build-action@master  # ...or replace 'master' with a full version tag, such as: v0.64.1
-      with:
-        args: --gc -b ${{ secrets.DEPLOY_URL_PROD }}
+        args: --gc -c config.toml
     - uses: burnett01/rsync-deployments@4.1
       with:
        switches: -avzr --delete
@@ -46,4 +30,20 @@ jobs:
        remote_host: ${{ secrets.DEPLOY_HOST }}
        remote_port: ${{ secrets.DEPLOY_PORT }}
        remote_user: ${{ secrets.DEPLOY_USER }}
+       remote_key: ${{ secrets.DEPLOY_KEY }}
+  build-and-deploy-coderradio:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: jakejarvis/hugo-build-action@master  # ...or replace 'master' with a full version tag, such as: v0.64.1
+      with:
+        args: --gc -c ${{ secrets.HUGO_CONFIG_CODERRADIO }}
+    - uses: burnett01/rsync-deployments@4.1
+      with:
+       switches: -avzr --delete
+       path: ./public_subsites/coderradio/
+       remote_path: ${{ secrets.DEPLOY_REMOTEPATH_PROD_CODERRADIO }}
+       remote_host: ${{ secrets.DEPLOY_HOST }}
+       remote_port: ${{ secrets.DEPLOY_PORT }}
+       remote_user: ${{ secrets.DEPLOY_USER_CODERRADIO }}
        remote_key: ${{ secrets.DEPLOY_KEY }}
