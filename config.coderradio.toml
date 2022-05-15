@@ -4,6 +4,9 @@ title = 'Coder Radio'
 
 theme = 'jb'
 
+# directory where the output is generated to
+publishdir = 'public_coderradio'
+
 # Allow HTML in Markdown
 [markup]
   [markup.goldmark]
