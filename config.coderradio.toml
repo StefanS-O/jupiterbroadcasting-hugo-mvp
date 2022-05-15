@@ -2,10 +2,13 @@ baseURL = 'https://cr-jb.codefighters.net/'
 languageCode = 'en-us'
 title = 'Coder Radio'
 
-theme = 'jb'
+# Theme Components, takes two themes and merge them
+# https://gohugo.io/hugo-modules/theme-components/
+# discussion: https://discourse.gohugo.io/t/sub-themes-or-theme-families/3938
+theme = ['sub','jb']
 
 # directory where the output is generated to
-publishdir = 'public_coderradio'
+publishdir = 'public_subsites/coderradio'
 
 # Allow HTML in Markdown
 [markup]
