@@ -43,11 +43,29 @@ Start the development Server (rebuild on every filesystem change)
 
 tbd
 
+### run for different Site
+
+`hugo server -D --config config.coderradio.toml`
+
+to clean the module config
+
+`hugo mod clean --all`
+
+build
+
+`hugo -D --config config.coderradio.toml`
+
+Hugo issue currently regarding overlapping mounts
+
+https://github.com/gohugoio/hugo/issues/7123
+
+so for now only subdirectories work
+
 ## Deployment
 
 Deployment is done with Github Actions, see workflow file in `.github/workflows/main.yml`
 At the moment it is only triggered when something in the `main` branch is changing, but it can also be set up to run at certain times.
-This would also enable scheduled publishing, since Hugo per default only build pages which have set `date` in frontmatter to <= now
+This would also enable scheduled publishing, since Hugo per default only build pages which have set `date` in frontmatter to <= `now`
 
 ## Credits
 
