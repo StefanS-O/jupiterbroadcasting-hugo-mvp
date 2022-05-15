@@ -5,7 +5,7 @@ date = "2022-05-10T04:10:01-05:00"
 draft = false
 categories = ["Coder Radio"]
 
-hosts = ["chrislas","michael"]
+hosts = ["chrislas","michael","wespayne"]
 
 header_image = "/shows/coderradio.png"
 
