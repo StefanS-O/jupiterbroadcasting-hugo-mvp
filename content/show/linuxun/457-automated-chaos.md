@@ -8,7 +8,7 @@ tags = ["zsh","ansible","podman"]
 hosts = ["chrislas","michael","brent"]
 guests = ["alexktz"]
 sponsors = ["bitwarden","linode-unplugged"]
-header_image = "/shows/linuxun.png"
+header_image = "/images/shows/linuxun.png"
 
 show = "LINUX Unplugged"
 episode = 457

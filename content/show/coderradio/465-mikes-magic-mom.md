@@ -7,7 +7,7 @@ categories = ["Coder Radio","Featured", "Video"]
 tags = ["zsh"]
 hosts = ["chrislas","michael"]
 
-header_image = "/shows/coderradio.png"
+header_image = "/images/shows/coderradio.png"
 
 show = "Coder Radio"
 episode = 465

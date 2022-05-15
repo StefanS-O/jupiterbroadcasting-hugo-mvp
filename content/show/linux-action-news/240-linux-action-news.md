@@ -8,7 +8,7 @@ tags = ["gaming","gaming on linux","vulkan"]
 hosts = ["chrislas","joe"]
 sponsors = ["ting","linode"]
 guests = ["christianschaller"]
-header_image = "/shows/linux-action-news.png"
+header_image = "/images/shows/linux-action-news.png"
 
 show = "Linux Action News"
 episode = 240
