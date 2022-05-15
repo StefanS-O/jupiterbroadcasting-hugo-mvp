@@ -1,8 +1,7 @@
 {{ define "main" }}
-
 <div class="container">
-  <h1 class="title">{{.Title}}</h1>
-  {{.Content}}
+<h1 class="title">{{.Title}}</h1>
+{{.Content}}
 </div>
 
 {{ $lastUrlElement := index (last 1 (split (delimit (split .Permalink "/") "," "") ",")) 0 }}
@@ -18,6 +17,10 @@
       </div>
     </div>
   </section>
+{{ else }}
+  Show Details of {{$lastUrlElement}}
+  
+
 {{ end }}
 
 {{ end }}

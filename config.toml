@@ -28,3 +28,9 @@ theme = 'jb'
     identifier = "shows"
     url = "/show"
     weight =-90
+
+[[Menu.Main]]
+    name = "Hosts"
+    identifier = "hosts"
+    url = "/hosts"
+    weight =80
