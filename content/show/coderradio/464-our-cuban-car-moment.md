@@ -11,7 +11,6 @@ type = "episode"
 
 header_image = "/images/shows/coderradio.png"
 
-show = "coderradio"
 episode = 464
 podcast_duration = "0:51:37"
 podcast_file = "http://www.podtrac.com/pts/redirect.mp3/aphid.fireside.fm/d/1437767933/b44de5fa-47c1-4e94-bf9e-c72f8d1c8f5d/4d99f6bc-2eb4-4f44-aebc-6cecbc167c8d.mp3"

@@ -1,21 +1,12 @@
-{{ $currentshow := print .Params.show }}
 {
   "version": 5,
-  {{ range $key, $site := .Site.Pages }}
-    {{- if isset $site.Params "show" -}}
-      {{if eq $site.Params.show $currentshow }}
-        {{if eq $site.Kind "section" }}
-          "show": {
-            "title": "{{$site.Title}}",
-            "subtitle": "{{$site.Description }}",
-            "summary": "{{$site.Description}}",
-            "poster": "{{$site.Params.header_image}}",
-            "link": "{{$site.Permalink}}"
-          },
-        {{ end }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
+      "show": {
+        "title": "{{.CurrentSection.Title}}",
+        "subtitle": "{{.CurrentSection.Description}}",
+        "summary": "{{.CurrentSection.Description}}",
+        "poster": "{{.CurrentSection.Params.header_image}}",
+        "link": "{{.CurrentSection.Permalink}}"
+      },
   {{ $summary := index (split .Description ".") 0 }}
   "title": "{{.Title}} {{.Params.episode}}",
   "subtitle": "{{$summary}}.",
