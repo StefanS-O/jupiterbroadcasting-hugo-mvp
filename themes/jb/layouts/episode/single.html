@@ -1,7 +1,7 @@
 {{ define "main" }}
   <div class="container">
       <div class="content">
-        <h1>{{ .Title }} | {{.Params.show}} {{.Params.episode}}</h1>
+        <h1>{{ .Title }} | {{.CurrentSection.Title}} {{.Params.episode}}</h1>
         <strong>{{ .Date.Day }}  {{ .Date.Month }} {{ .Date.Year }}</strong><br/>
         {{ partial "episode/videoplayer.html" . }}
 
@@ -16,6 +16,7 @@
         {{ end }}
         {{ .Description }}
 
+          {{.Kind}}
         {{ partial "episode/audioplayer.html" . }}
 
         {{ partial "episode/support.html" . }}

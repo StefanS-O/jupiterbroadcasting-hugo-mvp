@@ -34,3 +34,12 @@ theme = 'jb'
     identifier = "hosts"
     url = "/hosts"
     weight =80
+
+[outputFormats]
+  [outputFormats.webplayer]
+  mediatype ="application/json"
+  baseName = "webplayer"
+
+[outputs]
+  page = ["json","html","webplayer"]
+  section = ["html"]

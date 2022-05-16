@@ -67,3 +67,12 @@ contentDir = "sites/coderradio/content"
 [[module.mounts]]
   source = 'archetypes'
   target = 'archetypes'
+
+[outputFormats]
+  [outputFormats.webplayer]
+  mediatype ="application/json"
+  baseName = "webplayer"
+
+[outputs]
+  page = ["json","html","webplayer"]
+  section = ["html"]
