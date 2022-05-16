@@ -13,4 +13,3 @@
 {{ $video := resources.Get "js/video.min.js" }}
 {{ $defaultJS := slice $main $navigation $video | resources.Concat "js/global.js" | resources.Minify | resources.Fingerprint }}
 <script src="{{ $defaultJS.Permalink }}"></script>
-<script src="https://cdn.podlove.org/web-player/5.x/embed.js"></script>

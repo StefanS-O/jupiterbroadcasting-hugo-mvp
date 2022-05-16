@@ -1,4 +1,4 @@
-baseURL = 'https://jb.codefighters.net/'
+baseURL = 'http://localhost/'
 languageCode = 'en-us'
 title = 'Jupiter Broadcasting'
 
