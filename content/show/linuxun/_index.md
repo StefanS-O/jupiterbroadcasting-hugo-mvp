@@ -6,8 +6,10 @@ draft = false
 categories = ["LINUX Unplugged"]
 show = "linuxun"
 hosts = ["chrislas","wespayne"]
-
+type = "show"
 header_image = "/images/shows/linuxun.png"
+
+support_link = "https://jupitersignal.memberful.com/checkout?plan=52946"
 
 +++
 

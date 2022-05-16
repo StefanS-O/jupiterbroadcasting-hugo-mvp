@@ -4,25 +4,28 @@
 </div>
 <div class="container">
   <div class="columns">
-    <div class="column is-half">
-      {{.Content}}
-    </div>
-    <div class="column is-half">
-      Your Hosts
+    {{ if isset .Params "hosts" }}
+      <div class="column is-half">
+        {{.Content}}
+      </div>
+      <div class="column is-half">
+        Your Hosts
 
-      {{ range $index, $hostname := .Params.hosts }}
-        {{ $host := index $.Site.Data.hosts $hostname }}
-          <div>
-            {{ partial "hosts/smallest.html" (dict "context" . "host" $host) }}
-          </div>
-      {{ end }}
-
-    </div>
+        {{ range $index, $hostname := .Params.hosts }}
+          {{ $host := index $.Site.Data.hosts $hostname }}
+            <div>
+              {{ partial "hosts/smallest.html" (dict "context" . "host" $host) }}
+            </div>
+        {{ end }}
+      </div>
+    {{else}}
+        <div class="column is-full">
+          {{.Content}}
+        </div>
+    {{end}}
   </div>
 </div>
-<div class="container">
-  <h3 class="title is-5">{{.Title}} on social media</h3>
-</div>
+
 <section class="section episode-list">
   <div class="container">
      <div class="columns is-multiline">

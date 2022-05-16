@@ -7,7 +7,11 @@ categories = ["Linux Action News"]
 show = "linux-action-news"
 hosts = ["chrislas","joe"]
 
+type = "show"
+
 header_image = "/images/shows/linux-action-news.png"
+
+support_link = "https://patreon.com/jupitersignal"
 +++
 
 Weekly Linux news and analysis by hosts Chris and Joe. We hope this is the show you’ll go to each week when you want to hear an informed discussion about what’s happening in Linux.
