@@ -9,7 +9,7 @@ hosts = ["chrislas","michael","brent"]
 guests = ["alexktz"]
 sponsors = ["bitwarden","linode-unplugged"]
 header_image = "/images/shows/linuxun.png"
-
+type = "episode"
 show = "linuxun"
 episode = 457
 podcast_duration = "0:47:58"

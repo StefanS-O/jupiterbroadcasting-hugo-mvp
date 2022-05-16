@@ -18,11 +18,13 @@ podcast_bytes = "50714395"
 
 youtube_link = "https://youtu.be/uccdgoU47MQ"
 video_file = "http://www.podtrac.com/pts/redirect.mp4/201406.jb-dl.cdn.scaleengine.net/lan/2022/lan-0240.mp4"
-
+type = "episode"
 [test]  
   keyindoc = "value in doc"
 
-[chapter]      
+[chapter]
+
+
 +++
 
 ## Episode Links

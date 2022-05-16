@@ -7,6 +7,9 @@ categories = ["Coder Radio"]
 show = "coderradio"
 hosts = ["chrislas","michael"]
 
+type = "show"
+
+
 header_image = "/images/shows/coderradio.png"
 
 +++

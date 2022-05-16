@@ -7,6 +7,8 @@ categories = ["Linux Action News"]
 show = "linux-action-news"
 hosts = ["chrislas","joe"]
 
+type = "show"
+
 header_image = "/images/shows/linux-action-news.png"
 +++
 

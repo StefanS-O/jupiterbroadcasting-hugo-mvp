@@ -7,6 +7,8 @@ categories = ["Coder Radio","Featured", "Video"]
 tags = ["zsh"]
 hosts = ["chrislas","michael"]
 
+type = "episode"
+
 header_image = "/images/shows/coderradio.png"
 
 show = "coderradio"
