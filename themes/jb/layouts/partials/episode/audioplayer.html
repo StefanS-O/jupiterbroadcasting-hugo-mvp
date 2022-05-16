@@ -1,6 +1,7 @@
-<div>
-  <audio controls>
-     <source src="{{.Params.podcast_file}}" type="audio/mpeg">
-     Your browser does not support the audio element.
-  </audio>
-</div>
+<div id="audioplayer" data-variant="xl"></div>
+
+{{ $link := print "webplayer.json" | print .Permalink  }}
+
+<script>
+  podlovePlayer('#audioplayer', "{{ $link }}", '/podlove/config.json').then(registerExternalEvents('player'))
+</script>

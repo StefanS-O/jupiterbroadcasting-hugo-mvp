@@ -11,7 +11,9 @@
           </div>
         {{ end }}
 
-
+        {{ range $key, $value := .Params.test  }}
+          {{ $key}} {{ $value}}
+        {{ end }}
         {{ .Description }}
 
         {{ partial "episode/audioplayer.html" . }}

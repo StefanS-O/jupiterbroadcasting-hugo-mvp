@@ -1,4 +1,4 @@
-baseURL = 'https://jb.codefighters.net/'
+baseURL = 'http://localhost/'
 languageCode = 'en-us'
 title = 'Jupiter Broadcasting'
 
@@ -34,3 +34,14 @@ theme = 'jb'
     identifier = "hosts"
     url = "/hosts"
     weight =80
+
+[outputs]
+  page = ["json","html","webplayer"]
+  section = ["html"]
+
+[outputFormats.shows]
+  mediatype ="application/json"
+
+[outputFormats.webplayer]
+  mediatype ="application/json"
+  baseName = "webplayer"

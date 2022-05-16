@@ -4,7 +4,7 @@ description = "A weekly talk show taking a pragmatic look at the art and busines
 date = "2022-05-10T04:10:01-05:00"
 draft = false
 categories = ["Coder Radio"]
-
+show = "coderradio"
 hosts = ["chrislas","michael"]
 
 header_image = "/images/shows/coderradio.png"

@@ -10,7 +10,7 @@ guests = ["alexktz"]
 sponsors = ["bitwarden","linode-unplugged"]
 header_image = "/images/shows/linuxun.png"
 
-show = "LINUX Unplugged"
+show = "linuxun"
 episode = 457
 podcast_duration = "0:47:58"
 podcast_file = "http://www.podtrac.com/pts/redirect.mp3/chtbl.com/track/392D9/aphid.fireside.fm/d/1437767933/f31a453c-fa15-491f-8618-3f71f1d565e5/79855861-037c-4e37-81c9-36a795764341.mp3"
