@@ -1,7 +1,7 @@
-<div id="player" data-variant="xl"></div>
+<div id="audioplayer" data-variant="xl"></div>
 
 {{ $link := print "webplayer.json" | print .Permalink  }}
 
 <script>
-  podlovePlayer('#player', "{{ $link }}", '/podlove/config.json').then(registerExternalEvents('player'))
+  podlovePlayer('#audioplayer', "{{ $link }}", '/podlove/config.json').then(registerExternalEvents('player'))
 </script>
