@@ -1,0 +1,10 @@
+[outputs]
+page = ["json","html","webplayer"]
+section = ["html"]
+
+[outputFormats.shows]
+mediatype ="application/json"
+
+[outputFormats.webplayer]
+mediatype ="application/json"
+baseName = "webplayer"
