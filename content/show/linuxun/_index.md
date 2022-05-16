@@ -4,7 +4,7 @@ description = "Your virtual Linux User Group (vLUG) with no limits, and tons of 
 date = "2022-05-10T04:10:01-05:00"
 draft = false
 categories = ["LINUX Unplugged"]
-
+show = "linuxun"
 hosts = ["chrislas","wespayne"]
 
 header_image = "/images/shows/linuxun.png"

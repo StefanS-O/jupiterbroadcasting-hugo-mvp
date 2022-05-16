@@ -10,7 +10,7 @@ sponsors = ["ting","linode"]
 guests = ["christianschaller"]
 header_image = "/images/shows/linux-action-news.png"
 
-show = "Linux Action News"
+show = "linux-action-news"
 episode = 240
 podcast_duration = "0:21:21"
 podcast_file = "http://www.podtrac.com/pts/redirect.mp3/chtbl.com/track/392D9/aphid.fireside.fm/d/1437767933/dec90738-e640-45e5-b375-4573052f4bf4/57f4ff56-99d1-45a8-91c8-78c7652eb36f.mp3"

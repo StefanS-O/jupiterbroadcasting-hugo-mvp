@@ -4,7 +4,7 @@ description = "Weekly Linux news and analysis by hosts Chris and Joe. We hope th
 date = "2022-05-10T04:10:01-05:00"
 draft = false
 categories = ["Linux Action News"]
-
+show = "linux-action-news"
 hosts = ["chrislas","joe"]
 
 header_image = "/images/shows/linux-action-news.png"

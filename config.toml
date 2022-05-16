@@ -36,8 +36,12 @@ theme = 'jb'
     weight =80
 
 [outputs]
-  page = ["json","html","shows"]
+  page = ["json","html","webplayer"]
   section = ["html"]
 
 [outputFormats.shows]
   mediatype ="application/json"
+
+[outputFormats.webplayer]
+  mediatype ="application/json"
+  baseName = "webplayer"

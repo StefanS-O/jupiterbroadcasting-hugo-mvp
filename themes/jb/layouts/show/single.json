@@ -1,19 +1,29 @@
+{{ $currentshow := print .Params.show }}
 {
   "version": 5,
-  "show": {
-    "title": "{{.Params.show}}",
-    "subtitle": "Der Podlove Entwickler:innen Podcast",
-    "summary": "Podlove ist eine Initiative zur Verbesserung der Open Source Infrastruktur zum Podcasting. Podlove ist gleichzeitig auch ein Netzwerk an Entwickler:innen zur Diskussion von Features und Standardisierung.",
-    "poster": "/images/shows/coderradio.png",
-    "link": "https://podlovers.org"
-  },
+  {{ range $key, $site := .Site.Pages }}
+    {{- if isset $site.Params "show" -}}
+      {{if eq $site.Params.show $currentshow }}
+        {{if eq $site.Kind "section" }}
+          "show": {
+            "title": "{{$site.Title}}",
+            "subtitle": "{{$site.Description }}",
+            "summary": "{{$site.Description}}",
+            "poster": "{{$site.Params.header_image}}",
+            "link": "{{$site.Permalink}}"
+          },
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ $summary := index (split .Description ".") 0 }}
   "title": "{{.Title}} {{.Params.episode}}",
-  "subtitle": "Podlove Web Player: Motivation, Geschichte, Features, Ausblick",
-  "summary": "Wir holen uns Simon zur Hilfe um \u00fcber die Anf\u00e4nge des Podlove Web Player zu sprechen: Warum es ihn gibt und wie die ersten Versionen aussahen. In der zweiten H\u00e4lfte geht es tief in den Technik-Kaninchenbau: Alex erl\u00e4utert seine Motivation f\u00fcr den Neubau f\u00fcr Podlove Web Player 4 und 5. Zum Schluss besprechen wir das holprige Release des aktuellen Web Player Plugins.",
-  "publicationDate": "2020-08-16T11:58:58+00:00",
+  "subtitle": "{{$summary}}.",
+  "summary": "{{.Description}} ",
+  "publicationDate": "{{ dateFormat "Mon, 2 Jan 2006 15:04:05 -0700" .Date }}",
   "duration": "{{.Params.podcast_duration}}",
-  "poster": "/images/shows/coderradio.png",
-  "link": "{{.Permalink}}",
+  "poster": "{{.Params.header_image}}",
+  "link": "{{replace .RelPermalink "json" "html"}}",
   "chapters": [
     {
       "start": "00:00:00.000",
