@@ -9,7 +9,7 @@ hosts = ["chrislas","wespayne"]
 type = "show"
 header_image = "/images/shows/linuxun.png"
 
-support_link = "https://jupitersignal.memberful.com/checkout?plan=53334"
+support_link = "https://jupitersignal.memberful.com/checkout?plan=52946"
 
 +++
 
