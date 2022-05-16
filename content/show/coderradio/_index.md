@@ -12,6 +12,8 @@ type = "show"
 
 header_image = "/images/shows/coderradio.png"
 
+support_link = "https://jupitersignal.memberful.com/checkout?plan=53334"
+
 +++
 
 A weekly talk show taking a pragmatic look at the art and business of Software Development and related technologies.

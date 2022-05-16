@@ -9,6 +9,8 @@ hosts = ["chrislas","wespayne"]
 type = "show"
 header_image = "/images/shows/linuxun.png"
 
+support_link = "https://jupitersignal.memberful.com/checkout?plan=53334"
+
 +++
 
 Your virtual Linux User Group (vLUG) with no limits, and tons of opinion. An open show powered by community LINUX Unplugged takes the best attributes of open collaboration and focuses them into a weekly lifestyle show about Linux.
