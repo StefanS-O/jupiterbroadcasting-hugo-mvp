@@ -8,7 +8,7 @@ show = "extras"
 hosts = ["chrislas","brent","wespayne"]
 
 type = "show"
-
+active = true
 
 header_image = "/images/shows/extras.png"
 

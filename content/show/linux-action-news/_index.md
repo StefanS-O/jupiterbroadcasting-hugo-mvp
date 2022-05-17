@@ -8,6 +8,7 @@ show = "linux-action-news"
 hosts = ["chrislas","joe"]
 
 type = "show"
+active = true
 
 header_image = "/images/shows/linux-action-news.png"
 

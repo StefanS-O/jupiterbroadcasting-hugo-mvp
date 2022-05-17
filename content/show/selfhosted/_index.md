@@ -8,7 +8,7 @@ show = "selfhosted"
 hosts = ["chrislas","alexktz"]
 
 type = "show"
-
+active = true
 
 header_image = "/images/shows/selfhosted.png"
 
