@@ -35,6 +35,12 @@ theme = 'jb'
     url = "/hosts"
     weight =80
 
+[[Menu.Main]]
+    name = "Archive"
+    identifier = "archive"
+    url = "/archive"
+    weight =90
+
 [outputFormats]
   [outputFormats.webplayer]
   mediatype ="application/json"

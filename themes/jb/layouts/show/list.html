@@ -30,14 +30,16 @@
   <div class="container">
      <div class="columns is-multiline">
         {{ range .Data.Pages }}
-                  <div class="column is-6 is-4-fullhd is-4-desktop is-12-mobile"  style="display: flex;">
-                    {{ if ne  .Kind "section" }}
-                        {{ partial "episode/preview.html" . }}
-                    {{ else }}
-                        {{ partial "episode/show.html" . }}
-                    {{ end }}
-                  </div>
+          {{ if eq .Params.active true }}
+              <div class="column is-6 is-4-fullhd is-4-desktop is-12-mobile"  style="display: flex;">
+                {{ if ne  .Kind "section" }}
+                    {{ partial "episode/preview.html" . }}
+                {{ else }}
+                    {{ partial "episode/show.html" . }}
+                  {{ end }}
+              </div>
           {{ end }}
+        {{ end }}
       </div>
     </div>
 </section>
