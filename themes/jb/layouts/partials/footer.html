@@ -2,8 +2,37 @@
 
 <footer class="footer">
   <div class="container">
+      <div class="columns">
+          <div class="column has-text-centered-mobile">
+            {{ $remotefile := print "images/logo_narrow.png" | print .Site.BaseURL }}
+            {{ $image := resources.GetRemote $remotefile }}
+            {{ $image := $image.Resize "280x" }}
+            <a href="{{.Site.BaseURL}}  " alt="Jupiter Broadcasting"><img src="{{ $image.RelPermalink }}" alt="Jupiter Broadcasting Logo" width="{{ $image.Width }}" height="{{ $image.Height }}"/></a>
+          </div>
+          <div class="column has-text-centered-mobile">
+            <h6 class="title is-6">Shows</h6>
+            <ul>
+              {{ range $index, $episode := first 10 (where .Site.Pages "Section" "show") }}
+                    {{ if eq $episode.Kind "section" }}
+                      {{ if ne $episode.Title "Shows"  }}
+                        <li><a href="{{.RelPermalink}}" alt="{{.Title}}">{{.Title}}</a></li>
+                        {{ end }}
+                    {{ end }}
+                {{ end }}
+            </ul>
+          </div>
+          <div class="column has-text-centered-mobile">
+            <h6 class="title is-6">Content</h6>
+          </div>
+          <div class="column has-text-centered-mobile">
+            <h6 class="title is-6">Community</h6>
+          </div>
+
+      </div>
+  </div>
+  <div class="container">
       <div class="columns is-vcentered">
-        Our shows are licensed under Creative Commons BY-SA 4.0
+          <div class="column has-text-centered is-fullwidth">Our shows are licensed under Creative Commons BY-SA 4.0</div>
       </div>
   </div>
  </footer>
