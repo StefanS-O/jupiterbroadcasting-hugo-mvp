@@ -13,10 +13,8 @@
             <h6 class="title is-6">Shows</h6>
             <ul>
               {{ range $index, $episode := first 10 (where .Site.Pages "Section" "show") }}
-                    {{ if eq $episode.Kind "section" }}
-                      {{ if ne $episode.Title "Shows"  }}
+                    {{ if eq $episode.Params.type "show" }}
                         <li><a href="{{.RelPermalink}}" alt="{{.Title}}">{{.Title}}</a></li>
-                        {{ end }}
                     {{ end }}
                 {{ end }}
             </ul>
