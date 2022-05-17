@@ -4,10 +4,9 @@
   <div class="container">
       <div class="columns">
           <div class="column has-text-centered-mobile">
-            {{ $remotefile := print "images/logo_narrow.png" | print .Site.BaseURL }}
-            {{ $image := resources.GetRemote $remotefile }}
-            {{ $image := $image.Resize "280x" }}
-            <a href="{{.Site.BaseURL}}  " alt="Jupiter Broadcasting"><img src="{{ $image.RelPermalink }}" alt="Jupiter Broadcasting Logo" width="{{ $image.Width }}" height="{{ $image.Height }}"/></a>
+            <a href="{{.Site.BaseURL}}  " alt="Jupiter Broadcasting">
+              <img src="/images/logo_small.png" alt="Jupiter Broadcasting Logo" width="300" height="105"/>
+            </a>
           </div>
           <div class="column has-text-centered-mobile">
             <h6 class="title is-6">Shows</h6>
