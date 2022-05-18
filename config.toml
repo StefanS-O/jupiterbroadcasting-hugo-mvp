@@ -48,4 +48,4 @@ theme = 'jb'
 
 [outputs]
   page = ["json","html","webplayer"]
-  section = ["html"]
+  section = ["html","rss"]
