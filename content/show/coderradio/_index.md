@@ -14,15 +14,16 @@ header_image = "/images/shows/coderradio.png"
 
 support_link = "https://jupitersignal.memberful.com/checkout?plan=53334"
 
+[links.twitter]
+  url = "https://twitter.com/coderradioshow"
+[links.email]
+  url = "https://www.jupiterbroadcasting.com/contact/"  
+[links.reddit]
+  url = "https://www.reddit.com/r/coderradio"  
+[links.shownotes]
+  url = "https://coder.show/"  
+
+
 +++
 
 A weekly talk show taking a pragmatic look at the art and business of Software Development and related technologies.
-
-<ul>
-  <li><a href="https://coder.show/hosts/michael">Michael Dominick</a></li>
-  <li><a href="https://coder.show/hosts/wespayne">Wes Payne</a></li>
-  <li><a href="https://coder.show">Show Notes</a></li>
-  <li><a href="https://www.jupiterbroadcasting.com/contact/">E-Mail</a></li>
-  <li><a href="https://www.reddit.com/r/coderradio">Subreddit</a></li>
-  <li><a href="https://twitter.com/coderradioshow">Twitter</a></li>
-</ul>

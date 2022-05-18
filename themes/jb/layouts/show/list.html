@@ -7,6 +7,9 @@
     {{ if isset .Params "hosts" }}
       <div class="column is-half">
         {{.Content}}
+        {{with .Params.links}}
+            {{ partial "show/links.html" . }}
+        {{end}}
       </div>
       <div class="column is-half">
         Your Hosts
