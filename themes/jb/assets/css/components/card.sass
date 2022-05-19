@@ -1,6 +1,5 @@
 .card.is-horizontal
     display: flex
-
     .card-image
       width: 100%
       height: 100%
@@ -12,4 +11,11 @@
       position: relative
 
     .card-content
+        background-color: green
         flex-grow: 1
+.card
+  background-color: $card-background-color
+  .content
+    background-color: $card-content-background-color
+    h1,h2,h3,h4,h5,h6,strong
+      color: $card-header-color
