@@ -41,7 +41,8 @@ Start the development Server (rebuild on every filesystem change)
 
 ### Using Docker
 
-tbd
+To build and run the docker image:
+`make run`
 
 ### run for different Site
 
