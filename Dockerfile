@@ -1,5 +1,5 @@
 FROM ubuntu:jammy AS builder
-RUN apt-get update && apt-get install -y hugo git
+RUN apt-get update && apt-get install -y hugo
 WORKDIR /build
 COPY . .
 RUN hugo -D
