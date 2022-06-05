@@ -1,0 +1,10 @@
+version: '3'
+services:
+  jbsite:
+    image: jbsite
+    container_name: jbsite
+    restart: unless-stopped
+    build:
+      context: .
+    ports:
+      - 1111:80
