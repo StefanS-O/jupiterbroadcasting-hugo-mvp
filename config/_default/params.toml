@@ -19,3 +19,4 @@ feed.itunes_type = "episodic"
 
 # Twitch Info
 twitch.channel = "jupiterbroadcasting"
+twitch.parent = "jb-live.codefighters.net"
