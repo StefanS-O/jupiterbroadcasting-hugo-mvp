@@ -1,3 +1,14 @@
 <div class="twitch-wrapper">
-  <div id="twitch-embed"></div>
+  <div class="twitch">
+    <div class="twitch-video">
+      <iframe
+        src="https://player.twitch.tv/?channel={{.Site.Params.twitch.channel}}&parent={{.Site.BaseURL}}&autoplay=false"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen="true"
+        height="100%"
+        width="100%">
+      </iframe>
+    </div>
+  </div>
 </div>

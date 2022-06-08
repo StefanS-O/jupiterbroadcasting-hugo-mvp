@@ -3,22 +3,8 @@
 
     <div class="container">
       {{ partial "live/twitch.html" . }}
-      </div>
-
-   {{ partial "live/irc.html" . }}
-{{ end }}
-
-{{ define "footerjs" }}
-<!-- Load the Twitch embed JavaScript file -->
-<script src="https://embed.twitch.tv/embed/v1.js"></script>
-
-<!-- Create a Twitch.Embed object that will render within the "twitch-embed" element -->
-<script type="text/javascript">
-  new Twitch.Embed("twitch-embed", {
-    width: 854,
-    height: 480,
-    layout: "video",
-    channel: "jupiterbroadcasting",
-  });
-</script>
+    </div>
+    <div class="container">
+      {{ partial "live/irc.html" . }}
+    </div>
 {{ end }}
