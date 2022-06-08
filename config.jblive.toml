@@ -44,6 +44,12 @@ contentDir = "sites/jblive/content"
 # currently it prevents us from mounting sites/coderradio/content directly
 # https://github.com/gohugoio/hugo/issues/7123
 [[module.mounts]]
+  source = 'sites/jblive/content'
+  target = 'content'
+[[module.mounts]]
+  source = 'content/calendar'
+  target = 'content/calendar'
+[[module.mounts]]
   source = 'static'
   target = 'static'
 [[module.mounts]]
