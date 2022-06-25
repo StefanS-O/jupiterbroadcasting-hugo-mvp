@@ -5,7 +5,7 @@ date = "2022-05-04T04:10:01-05:00"
 draft = false
 categories = ["Coder Radio","Featured", "Video"]
 tags = ["telegram premium"]
-hosts = ["chrislas","michael"]
+hosts = ["chris","michael"]
 
 type = "episode"
 
