@@ -246,8 +246,9 @@ def parse_guests(hugo_data, page_soup, show_config, ep):
 
         except Exception as e:
             Log.error(f"Failed to parse GUEST for link href!",
-                    href=link.get('href'),
-                    exception=e)
+                      show=show, ep=ep,
+                      href=link.get('href'),
+                      exception=e)
 
     return guests
 
@@ -371,7 +372,6 @@ def create_host_or_guest(url, dirname):
         # From guests list page. Need this because sometimes the single guest page
         # is missing info (e.g. all self-hosted guests)
         guest_data = SHOW_GUESTS.get(show_url, {}).get(username, {})  
-        # TODO same with SHOW_HOSTS
 
         name = parse_name(page_soup, username, guest_data)
         
@@ -388,7 +388,7 @@ def create_host_or_guest(url, dirname):
         nav = page_soup.find("nav", class_="links")
         if nav:
             links = nav.find_all("a")
-
+                
             # NOTE: This will work only if none of the links are shortened urls
             for link in links:
                 href = link.get("href").lower()
@@ -604,31 +604,8 @@ def jb_populate_episodes_urls(show_slug, show_base_url):
 def scrape_hosts_guests_and_sponsors(shows, executor):
     output_dir = os.path.join(DATA_ROOT_DIR, "data", "sponsors")
     mkdir_safe(output_dir)
-    # no need to do thread since there's only a handful number of shows
-    for show_slug, show_data in shows.items():
-        allg_url = f"{show_data['fireside_url']}/guests"
-        guests_soup = BeautifulSoup(requests.get(allg_url).content, "html.parser")
-        links = guests_soup.find("ul", class_="show-guests").find_all("a")
-        for l in links:
-            
-            username = l.get("href").rstrip("/").split("/")[-1]
-            name = l.find("h5").text.strip()
-            avatar_sm = l.find("img").get("src").split("?")[0]
-            avatar = avatar_sm.replace("_small.jpg", ".jpg")
-
-            SHOW_GUESTS.update({
-                show_data['fireside_url']: {
-                    username: {
-                        "username": username,
-                        "name": name,
-                        "avatar_sm": avatar_sm,
-                        "avatar": avatar
-                    }
-                }
-            })
-
-
-    # ****
+    
+    scrape_show_guests_page(shows)  # into the SHOW_GUESTS global variable
 
     futures = []
     
@@ -649,6 +626,34 @@ def scrape_hosts_guests_and_sponsors(shows, executor):
     for future in concurrent.futures.as_completed(futures):
         future.result()
 
+    # Log.debug("MISSING_SPONSORS:", json=json.dumps(MISSING_SPONSORS.keys(), indent=2))
+    # Log.debug("MISSING_HOSTS:", json=json.dumps(list(MISSING_HOSTS), indent=2))
+    # Log.debug("MISSING_GUESTS:", json=json.dumps(list(MISSING_GUESTS), indent=2))
+
+
+def scrape_show_guests_page(shows):
+    # no need to do thread since there's only a handful number of shows
+    for show_slug, show_data in shows.items():
+        all_guests_url = f"{show_data['fireside_url']}/guests"
+        guests_soup = BeautifulSoup(requests.get(all_guests_url).content, "html.parser")
+        links = guests_soup.find("ul", class_="show-guests").find_all("a")
+
+        for l in links:
+            username = l.get("href").rstrip("/").split("/")[-1]
+            name = l.find("h5").text.strip()
+            avatar_sm = l.find("img").get("src").split("?")[0]
+            avatar = avatar_sm.replace("_small.jpg", ".jpg")
+
+            this_show_guests = SHOW_GUESTS.get(show_data['fireside_url'], {})
+            this_show_guests.update({
+                username: {
+                    "username": username,
+                    "name": name,
+                    "avatar_sm": avatar_sm,
+                    "avatar": avatar
+                }
+            })
+            SHOW_GUESTS.update({show_data['fireside_url']: this_show_guests})
 
 def scrape_episodes_from_fireside(shows, hugo_data, executor):
     Log.info(">>> Scraping data from fireside...")
