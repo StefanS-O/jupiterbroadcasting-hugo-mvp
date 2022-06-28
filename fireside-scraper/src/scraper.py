@@ -12,6 +12,9 @@ from jinja2 import Template
 
 DATA_ROOT_DIR = "/data"
 
+# from the example.com/guests page by show web hostname and then by username
+SHOW_GUESTS = {}
+
 # Missing data found in a show. Used to scrape and/or create these files after the
 # episode files been created.
 MISSING_SPONSORS = {}
@@ -335,16 +338,17 @@ def read_hugo_data():
                 data_key = json_data.get(item["_key"])
 
                 if not data_key:
-                    print(f"read_hugo_data: skipping file `{file_path}` since it "
-                          "doesn't have the expected key `{item._key}`")
+                    Log.error(f"read_hugo_data: Skipping file `{file_path}` since it "
+                              f"doesn't have the expected key `{item._key}`")
                     continue
 
                 item["_data"].update({data_key: json_data})
 
-    hugo_data_debug = json.dumps(hugo_data, indent=2)
-    print(f"read_hugo_data: {hugo_data_debug}")
+    # hugo_data_debug = json.dumps(hugo_data, indent=2)
+    # print(f"read_hugo_data: {hugo_data_debug}")
 
     return hugo_data
+
 
 def get_username_from_url(url):
     """
@@ -352,33 +356,46 @@ def get_username_from_url(url):
     """
     return urlparse(url).path.split("/")[-1]
 
+
 def create_host_or_guest(url, dirname):
     try:
         valid_dirnames = {"hosts", "guests"}
-        assert dirname in valid_dirnames, "dirname arg must be either `hosts` or `guests`"
+        assert dirname in valid_dirnames, "dirname arg must be one of `hosts`, `guests`"
 
         page_soup = BeautifulSoup(requests.get(url).content, "html.parser")
         
-        name = page_soup.find("h1").text.strip()
+        username = get_username_from_url(url)  
 
-        username = get_username_from_url(url)
+        show_url = url.split("/guests")[0]
 
-        # It's possible to replace url part "avatar_small.jpg" to "avatar.jpg" to get higher
-        # res img, but not sure if required.
-        avatar_url = page_soup.find("div", class_="hero-avatar").find("img").get("src")
-        resp = requests.get(avatar_url)
-        avatar_bytes = resp.content
-        file_ext = resp.headers.get("x-bz-file-name").split(".")[-1]
+        # From guests list page. Need this because sometimes the single guest page
+        # is missing info (e.g. all self-hosted guests)
+        guest_data = SHOW_GUESTS.get(show_url, {}).get(username, {})  
 
+        # Fallback name to be to username
+        name = username
+
+        name_h1 = page_soup.find("h1")
+        if name_h1:
+            name = name_h1.text.strip()
+        elif guest_data: 
+            name = guest_data.get("name", username)
+        
+
+        if guest_data:
+            avatar_url = guest_data.get("avatar")
+        else:
+            avatar_div = page_soup.find("div", class_="hero-avatar")
+            avatar_url = avatar_div.find("img").get("src")
+        
         avatars_dir = os.path.join(DATA_ROOT_DIR, "static", "images", dirname)
         mkdir_safe(avatars_dir)
 
-        filename = f"{username}.{file_ext}"
+        filename = f"{username}.jpg"
         avatar_file = os.path.join(avatars_dir, filename)
 
         with open(avatar_file, "wb") as f:
-            f.write(avatar_bytes)
-
+            f.write(requests.get(avatar_url).content)
 
         # Get social links
 
@@ -405,15 +422,23 @@ def create_host_or_guest(url, dirname):
                 gplus = href
             elif "youtube" in href:
                 youtube = href
+        
+        bio = ""
+        _bio = page_soup.find("section")
+        if _bio:
+            bio = _bio.text.strip()
 
         host_json = {
-            "username": username, # e.g. "alexktz"
-            "name": name, # e.g. "Alex Kretzschmar"
-            "bio":  page_soup.find("section").text.strip(), # e.g. "Red Hatter. Drone Racer. Photographer. Dog lover."
-            "avatar":  f"/images/{dirname}/{filename}", # e.g. "/images/guests/alex_kretzschmar.jpeg"
-            "homepage": homepage, # e.g. "https://www.linuxserver.io/"
-            "twitter": twitter, # e.g. "https://twitter.com/ironicbadger"
-            "linkedin": linkedin, # e.g. "https://www.linkedin.com/in/alex-kretzschmar/""
+            "username": username,  # e.g. "alexktz"
+            "name": name,  # e.g. "Alex Kretzschmar"
+            # e.g. "Red Hatter. Drone Racer. Photographer. Dog lover."
+            "bio":  bio,
+            # e.g. "/images/guests/alex_kretzschmar.jpeg"
+            "avatar":  f"/images/{dirname}/{filename}",
+            "homepage": homepage,  # e.g. "https://www.linuxserver.io/"
+            "twitter": twitter,  # e.g. "https://twitter.com/ironicbadger"
+            # e.g. "https://www.linkedin.com/in/alex-kretzschmar/""
+            "linkedin": linkedin,
             "instagram": instagram,
             "gplus": gplus,
             "youtube": youtube,
