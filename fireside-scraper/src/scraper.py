@@ -1,8 +1,6 @@
 import concurrent.futures
 import json
-import operator
 import os
-from re import S
 from urllib.parse import urlparse
 
 import html2text
@@ -215,12 +213,13 @@ def parse_guests(hugo_data, page_soup, show_config, ep):
     guests = []
 
     # assumes the hosts are ALWAYS the first <ul> and guests are in the second one
-    hosts_list = page_soup.find("ul", class_="episode-hosts")  # <- this would always be the hosts list
+    # <- this would always be the hosts list
+    hosts_list = page_soup.find("ul", class_="episode-hosts")
     # look for the NEXT `ul.episode-hosts`, that should be the guests list (might not exist)
     guests_list = hosts_list.find_next("ul", class_="episode-hosts")
     if not guests_list:
         return guests
-    
+
     guests_links = guests_list.find_all("a")
     for link in guests_links:
         try:
