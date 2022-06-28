@@ -10,38 +10,48 @@ from bs4 import BeautifulSoup
 from dateutil.parser import parse as date_parse
 from jinja2 import Template
 
-DATA_ROOT_DIR = "/data"
 
-# from the example.com/guests page by show web hostname and then by username
+# Root dir where all the scraped data should to saved to.
+# The data save to this dir follows the directory structure of the Hugo files relative
+# to the root of the repo.
+# It is mounted as "scraped-data" in the root of the repo via docker volume.
+# This makes it very easy to copy the contents of DATA_ROOT_DIR over the existing files
+# in the repo using make cmd, like so:  `make scrape-copy` (also generates symlinks!)
+DATA_ROOT_DIR = os.getenv("DATA_ROOT_DIR", "../../scraped_data")
+
+HUGO_DATA_DIR = os.getenv("HUGO_DATA_DIR", "..../../data")
+
+
+# Hold global data scraped from the `/guests` page (page with a list of all the guests 
+# that appeared on the show e.g. https://coder.show/guests).
+# The keys in this dict are the base url of each show (e.g. "https://coder.show"), and
+# the keys of the "show" dict are usernames of the guests (e.g. "alexktz")
 SHOW_GUESTS = {}
 
-# Missing data found in a show. Used to scrape and/or create these files after the
-# episode files been created.
-MISSING_SPONSORS = {}
-MISSING_HOSTS = set()
-MISSING_GUESTS = set()
+
+# The purpose of the MISSING_* globals is to holds references (sometime with data) to 
+# entities that don't exist yet but are referenced in a show episdoe which is being 
+# scraped and saved. These are used to scrape and/or create the data json
+# files after the episode files been created/saved.
+MISSING_SPONSORS = {}  # JSON filename as key (e.g. "linode.com-lup.json")
+MISSING_HOSTS = set()  # Set of hosts' page urls (e.g. https://coder.show/host/chrislas)
+MISSING_GUESTS = set() # Same as MISSING_HOSTS above, but for guests
 
 
-"""
-Global to hold scraped data about episodes from jupiterbroadcasting.com.
-
-The structure of this is:
-
-{
-    "show_slug": {   # <-- as defined in config.yml
-        123: {   # <-- ep number
-            "youtube_link": "...",
-            "video_link": "...",
-            ...
-            ...
-            "key_1": "value"
-        }
-    },
-    "show_slug_2": { 
-        ...
-    }
-}
-"""
+# Global that holds scraped show episodes data from jupiterbroadcasting.com.
+# The data is links to different types episode medium files (mp3, youtube, ogg, video,
+#  etc.) - whatever is availble on the epidsode page under the "Direct Download:" header 
+#
+# The structure of this is:
+# {
+#     "coderradio": {   # <-- `show_slug`` as defined in config.yml
+#         "123": {   # <-- ep number
+#             "youtube_link": "https://www.youtube.com/watch?v=98Mh0BP__gE",
+#             ...
+#         }
+#     },
+#     "show_slug_2": { ... }
+# }
 JB_DATA = {}
 
 
@@ -49,14 +59,17 @@ with open("templates/episode.md.j2") as f:
     TEMPLATE = Template(f.read())
 
 
-def mkdir_safe(directory):
+def makedirs_safe(directory):
     try:
         os.makedirs(directory)
     except FileExistsError:
         pass
 
 
-def get_list(soup, pre_title, find_tag="p", sibling_tag="ul"):
+def get_list(soup: BeautifulSoup,
+             pre_title: str,
+             find_tag: str = "p",
+             sibling_tag: str = "ul"):
     """
     Blocks of links are preceded by a find_tag (`p` default) saying what it is.
     """
@@ -66,17 +79,15 @@ def get_list(soup, pre_title, find_tag="p", sibling_tag="ul"):
     return pre_element.find_next_sibling(sibling_tag)
 
 
-def seconds_2_hhmmss_str(seconds):
-    if type(seconds) == str:
-        seconds = int(seconds)
+def seconds_2_hhmmss_str(seconds: str | int) -> str:
+    seconds = int(seconds)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     return f"{hours:02}:{minutes:02}:{seconds:02}"
 
 
-def get_plain_title(title: str):
-    """
-    Get just the show title, without any numbering etc
+def get_plain_title(title: str) -> str:
+    """Get just the show title, without any numbering etc
     """
     # Remove number before colon
     title = title.split(":", 1)[-1]
@@ -88,9 +99,13 @@ def get_plain_title(title: str):
     return title.strip()
 
 
-def create_episode(api_episode, show_config, show_slug, hugo_data, output_dir):
+def create_episode(api_episode,
+                   show_config,
+                   show_slug: str,
+                   hugo_data,
+                   output_dir: str):
     try:
-        mkdir_safe(output_dir)
+        makedirs_safe(output_dir)
 
         # RANT: What kind of API doesn't give the episode number?!
         episode_number = int(api_episode["url"].split("/")[-1])
@@ -150,16 +165,12 @@ def create_episode(api_episode, show_config, show_slug, hugo_data, output_dir):
                 "episode_number": episode_number,
                 "episode_number_padded": episode_number_padded,
                 "podcast_duration": seconds_2_hhmmss_str(show_attachment['duration_in_seconds']),
-                # TODO: the url in fireside is prefixed using https://chtbl.com not http://www.podtrac.com. Should this be left as is or changed to use podtrac?
-                "podcast_file": show_attachment["url"],
+                "podcast_file": show_attachment["url"],  # using https://chtbl.com for tracking
                 "podcast_file_podtrack": jb_ep_data.get("mp3_audio", ""),
                 "podcast_file_ogg": jb_ep_data.get("ogg_audio", ""),
                 "podcast_bytes": show_attachment.get("size_in_bytes", ""),
-                # "url": api_episode.get("url", ""),
 
-                # TODO: leave empty or use None?
                 "youtube_link": jb_ep_data.get("youtube", ""),
-                # TODO: leave empty or use None?
                 "video_file": jb_ep_data.get("video", ""),
                 "video_file_hd": jb_ep_data.get("hd_video", ""),
                 "video_file_mobile": jb_ep_data.get("mobile_video", ""),
@@ -174,9 +185,9 @@ def create_episode(api_episode, show_config, show_slug, hugo_data, output_dir):
             f.write(output)
 
     except Exception as e:
-        Log.err(f"Failed to create an episode from url!",
-                episode_url=api_episode.get('url'),
-                exception=e)
+        Log.error(f"Failed to create an episode from url!",
+                  episode_url=api_episode.get('url'),
+                  exception=e)
 
 
 def parse_hosts(hugo_data, page_soup: BeautifulSoup, show_config, ep):
@@ -204,8 +215,10 @@ def parse_hosts(hugo_data, page_soup: BeautifulSoup, show_config, ep):
                 hosts.append(get_username_from_url(host_page_url))
         except Exception as e:
             Log.error(f"Failed to parse HOST for link href!",
-                    href=link.get('href'),
-                    exception=e)
+                      show=show,
+                      ep=ep,
+                      href=link.get('href'),
+                      exception=e)
     return hosts
 
 
@@ -302,7 +315,7 @@ def parse_sponsors(hugo_data, api_soup, page_soup, show, ep):
 
 
 def save_json_file(filename, json_obj, dest_dir):
-    mkdir_safe(dest_dir)
+    makedirs_safe(dest_dir)
 
     file_path = os.path.join(dest_dir, filename)
 
@@ -329,7 +342,7 @@ def read_hugo_data():
     }
 
     for key, item in hugo_data.items():
-        files_dir = f"/hugo-data/{key}"
+        files_dir = f"{HUGO_DATA_DIR}/{key}"
         json_files = os.listdir(files_dir)
 
         for file in json_files:
@@ -439,7 +452,7 @@ def save_avatar_img(dirname, page_soup, username, guest_data):
             
         if avatar_url:
             avatars_dir = os.path.join(DATA_ROOT_DIR, "static", "images", dirname)
-            mkdir_safe(avatars_dir)
+            makedirs_safe(avatars_dir)
 
             filename = f"{username}.jpg"
             avatar_file = os.path.join(avatars_dir, filename)
@@ -603,7 +616,7 @@ def jb_populate_episodes_urls(show_slug, show_base_url):
 
 def scrape_hosts_guests_and_sponsors(shows, executor):
     output_dir = os.path.join(DATA_ROOT_DIR, "data", "sponsors")
-    mkdir_safe(output_dir)
+    makedirs_safe(output_dir)
     
     scrape_show_guests_page(shows)  # into the SHOW_GUESTS global variable
 
@@ -663,7 +676,7 @@ def scrape_episodes_from_fireside(shows, hugo_data, executor):
         # Use same structure as in the root project for easy copy over
         output_dir = os.path.join(
             DATA_ROOT_DIR, "content", "show", show_slug)
-        mkdir_safe(output_dir)
+        makedirs_safe(output_dir)
 
         api_data = requests.get(
             show_config['fireside_url'] + "/json").json()
