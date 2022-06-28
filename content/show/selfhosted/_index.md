@@ -5,7 +5,7 @@ date = "2022-05-10T04:10:01-05:00"
 draft = false
 categories = ["Self-Hosted"]
 show = "selfhosted"
-hosts = ["chrislas","alexktz"]
+hosts = ["chris","alex"]
 
 type = "show"
 active = true
