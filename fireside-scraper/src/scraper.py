@@ -371,57 +371,39 @@ def create_host_or_guest(url, dirname):
         # From guests list page. Need this because sometimes the single guest page
         # is missing info (e.g. all self-hosted guests)
         guest_data = SHOW_GUESTS.get(show_url, {}).get(username, {})  
+        # TODO same with SHOW_HOSTS
 
-        # Fallback name to be to username
-        name = username
-
-        name_h1 = page_soup.find("h1")
-        if name_h1:
-            name = name_h1.text.strip()
-        elif guest_data: 
-            name = guest_data.get("name", username)
+        name = parse_name(page_soup, username, guest_data)
         
-
-        if guest_data:
-            avatar_url = guest_data.get("avatar")
-        else:
-            avatar_div = page_soup.find("div", class_="hero-avatar")
-            avatar_url = avatar_div.find("img").get("src")
-        
-        avatars_dir = os.path.join(DATA_ROOT_DIR, "static", "images", dirname)
-        mkdir_safe(avatars_dir)
-
-        filename = f"{username}.jpg"
-        avatar_file = os.path.join(avatars_dir, filename)
-
-        with open(avatar_file, "wb") as f:
-            f.write(requests.get(avatar_url).content)
+        filename = save_avatar_img(dirname, page_soup, username, guest_data)
 
         # Get social links
 
-        homepage = None
-        twitter = None
-        linkedin = None
-        instagram = None
-        gplus = None
-        youtube = None
-        links = page_soup.find("nav", class_="links").find_all("a")
+        homepage = ""
+        twitter = ""
+        linkedin = ""
+        instagram = ""
+        gplus = ""
+        youtube = ""
+        nav = page_soup.find("nav", class_="links")
+        if nav:
+            links = nav.find_all("a")
 
-        # NOTE: This will work only if none of the links are shortened urls
-        for link in links:
-            href = link.get("href").lower()
-            if "Website" in link.text:
-                homepage = href
-            elif "twitter" in href:
-                twitter = href
-            elif "linkedin" in href:
-                linkedin = href
-            elif "instagram" in href:
-                instagram = href
-            elif "google" in href:
-                gplus = href
-            elif "youtube" in href:
-                youtube = href
+            # NOTE: This will work only if none of the links are shortened urls
+            for link in links:
+                href = link.get("href").lower()
+                if "Website" in link.text:
+                    homepage = href
+                elif "twitter" in href:
+                    twitter = href
+                elif "linkedin" in href:
+                    linkedin = href
+                elif "instagram" in href:
+                    instagram = href
+                elif "google" in href:
+                    gplus = href
+                elif "youtube" in href:
+                    youtube = href
         
         bio = ""
         _bio = page_soup.find("section")
@@ -434,7 +416,7 @@ def create_host_or_guest(url, dirname):
             # e.g. "Red Hatter. Drone Racer. Photographer. Dog lover."
             "bio":  bio,
             # e.g. "/images/guests/alex_kretzschmar.jpeg"
-            "avatar":  f"/images/{dirname}/{filename}",
+            "avatar":  f"/images/{dirname}/{filename}" if filename else "",
             "homepage": homepage,  # e.g. "https://www.linuxserver.io/"
             "twitter": twitter,  # e.g. "https://twitter.com/ironicbadger"
             # e.g. "https://www.linkedin.com/in/alex-kretzschmar/""
@@ -449,6 +431,48 @@ def create_host_or_guest(url, dirname):
     except Exception as e:
         Log.error("Failed to create/save a new host/guest file!",
                   url=url, exception=e)
+
+def save_avatar_img(dirname, page_soup, username, guest_data):
+    """Returns the `filename` is all is successfully downloaded, None otherwise"""
+    try:
+        avatar_url = get_avatar_url(page_soup, guest_data)
+            
+        if avatar_url:
+            avatars_dir = os.path.join(DATA_ROOT_DIR, "static", "images", dirname)
+            mkdir_safe(avatars_dir)
+
+            filename = f"{username}.jpg"
+            avatar_file = os.path.join(avatars_dir, filename)
+
+            with open(avatar_file, "wb") as f:
+                f.write(requests.get(avatar_url).content)
+
+            return filename
+    except Exception as e:
+        Log.error("Failed to save avatar!", username=username, exception=e)
+
+
+def get_avatar_url(page_soup, guest_data):
+    avatar_url = None
+    if guest_data:
+        avatar_url = guest_data.get("avatar")
+    else:
+        avatar_div = page_soup.find("div", class_="hero-avatar")
+        if avatar_div:
+            avatar_url = avatar_div.find("img").get("src")
+    return avatar_url
+
+
+def parse_name(page_soup, username, guest_data):
+    # Fallback name to be to username
+    name = username
+
+    name_h1 = page_soup.find("h1")
+    if name_h1:
+        name = name_h1.text.strip()
+    elif guest_data: 
+        name = guest_data.get("name", username)
+    return name
 
 
 def main():
