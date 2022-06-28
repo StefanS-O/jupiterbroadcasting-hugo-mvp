@@ -8,3 +8,12 @@ services:
       context: .
     ports:
       - 1111:80
+  fireside-scraper:
+    user: 1000:1000
+    image: fireside-scraper
+    container_name: fireside-scraper
+    build:
+      context: ./fireside-scraper
+    volumes:
+      - ./scraped-data:/data
+      - ./data:/hugo-data:ro

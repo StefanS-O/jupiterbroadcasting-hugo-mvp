@@ -15,3 +15,7 @@ $RECYCLE.BIN/
 
 # Editor
 .idea
+.vscode
+
+# Ignore all the scraped data
+scraped-data
