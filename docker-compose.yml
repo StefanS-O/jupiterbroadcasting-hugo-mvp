@@ -12,6 +12,9 @@ services:
     user: 1000:1000
     image: fireside-scraper
     container_name: fireside-scraper
+    environment:
+      - DATA_ROOT_DIR=/data
+      - HUGO_DATA_DIR=/hugo-data
     build:
       context: ./fireside-scraper
     volumes:

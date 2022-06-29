@@ -1,8 +1,6 @@
 import concurrent.futures
 import json
-import operator
 import os
-from re import S
 from urllib.parse import urlparse
 
 import html2text
@@ -12,49 +10,84 @@ from bs4 import BeautifulSoup
 from dateutil.parser import parse as date_parse
 from jinja2 import Template
 
-DATA_ROOT_DIR = "/data"
 
-# Missing data found in a show. Used to scrape and/or create these files after the
-# episode files been created.
-MISSING_SPONSORS = {}
-MISSING_HOSTS = set()
-MISSING_GUESTS = set()
+# Root dir where all the scraped data should to saved to.
+# The data save to this dir follows the directory structure of the Hugo files relative
+# to the root of the repo.
+# It is mounted as "scraped-data" in the root of the repo via docker volume.
+# This makes it very easy to copy the contents of DATA_ROOT_DIR over the existing files
+# in the repo using make cmd, like so:  `make scrape-copy` (also generates symlinks!)
+DATA_ROOT_DIR = os.getenv("DATA_ROOT_DIR", "../../scraped_data")
+
+HUGO_DATA_DIR = os.getenv("HUGO_DATA_DIR", "..../../data")
+
+
+# Hold global data scraped from the `/guests` page (page with a list of all the guests 
+# that appeared on the show e.g. https://coder.show/guests).
+# The keys in this dict are the base url of each show (e.g. "https://coder.show"), and
+# the keys of the "show" dict are usernames of the guests (e.g. "alexktz")
+SHOW_GUESTS = {}
+
+
+# The purpose of the MISSING_* globals is to holds references (sometime with data) to 
+# entities that don't exist yet but are referenced in a show episdoe which is being 
+# scraped and saved. These are used to scrape and/or create the data json
+# files after the episode files been created/saved.
+MISSING_SPONSORS = {}  # JSON filename as key (e.g. "linode.com-lup.json")
+MISSING_HOSTS = set()  # Set of hosts' page urls (e.g. https://coder.show/host/chrislas)
+MISSING_GUESTS = set() # Same as MISSING_HOSTS above, but for guests
+
+
+# Global that holds scraped show episodes data from jupiterbroadcasting.com.
+# The data is links to different types episode medium files (mp3, youtube, ogg, video,
+#  etc.) - whatever is availble on the epidsode page under the "Direct Download:" header 
+#
+# The structure of this is:
+# {
+#     "coderradio": {   # <-- `show_slug`` as defined in config.yml
+#         "123": {   # <-- ep number
+#             "youtube_link": "https://www.youtube.com/watch?v=98Mh0BP__gE",
+#             ...
+#         }
+#     },
+#     "show_slug_2": { ... }
+# }
+JB_DATA = {}
 
 
 with open("templates/episode.md.j2") as f:
     TEMPLATE = Template(f.read())
 
 
-def log_warn(show, ep, msg):
-    print(f"WARN | {show} {ep} | {msg}")
-
-
-def mkdir_safe(directory):
+def makedirs_safe(directory):
     try:
         os.makedirs(directory)
     except FileExistsError:
         pass
 
 
-def get_list(soup, pre_title):
+def get_list(soup: BeautifulSoup,
+             pre_title: str,
+             find_tag: str = "p",
+             sibling_tag: str = "ul"):
     """
-    Blocks of links are preceded by a `p` saying what it is.
+    Blocks of links are preceded by a find_tag (`p` default) saying what it is.
     """
-    pre_element = soup.find("p", string=pre_title)
+    pre_element = soup.find(find_tag, string=pre_title)
     if pre_element is None:
         return None
-    return pre_element.find_next_sibling("ul")
+    return pre_element.find_next_sibling(sibling_tag)
 
 
-def get_duration(seconds):
+def seconds_2_hhmmss_str(seconds: str | int) -> str:
+    seconds = int(seconds)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     return f"{hours:02}:{minutes:02}:{seconds:02}"
 
 
-def get_plain_title(title: str):
-    """
-    Get just the show title, without any numbering etc
+def get_plain_title(title: str) -> str:
+    """Get just the show title, without any numbering etc
     """
     # Remove number before colon
     title = title.split(":", 1)[-1]
@@ -66,9 +99,13 @@ def get_plain_title(title: str):
     return title.strip()
 
 
-def create_episode(api_episode, show_config, hugo_data, output_dir):
+def create_episode(api_episode,
+                   show_config,
+                   show_slug: str,
+                   hugo_data,
+                   output_dir: str):
     try:
-        mkdir_safe(output_dir)
+        makedirs_safe(output_dir)
 
         # RANT: What kind of API doesn't give the episode number?!
         episode_number = int(api_episode["url"].split("/")[-1])
@@ -77,7 +114,7 @@ def create_episode(api_episode, show_config, hugo_data, output_dir):
         output_file = f"{output_dir}/{episode_number}.md"
 
         if os.path.isfile(output_file):
-            print("Skipping", api_episode['url'], "as it already exists")
+            Log.info(f"Skipping saving `{output_file}` as it already exists")
             return
 
         publish_date = date_parse(api_episode['date_published'])
@@ -96,7 +133,10 @@ def create_episode(api_episode, show_config, hugo_data, output_dir):
 
         tags = []
         for link in page_soup.find_all("a", class_="tag"):
-            tags.append(link.get_text().strip())
+            _tag = link.get_text().strip()
+            # escape inner quotes (occures in coderradio 434)
+            _tag = _tag.replace("\"", "\\\"")
+            tags.append(_tag)
 
         tags = sorted(tags)
 
@@ -104,9 +144,11 @@ def create_episode(api_episode, show_config, hugo_data, output_dir):
                             show_config, episode_number)
 
         guests = parse_guests(hugo_data, page_soup,
-                            show_config, episode_number)
+                              show_config, episode_number)
 
         show_attachment = api_episode["attachments"][0]
+
+        jb_ep_data = JB_DATA.get(show_slug, {}).get(episode_number, {})
 
         output = TEMPLATE.render(
             {
@@ -125,24 +167,31 @@ def create_episode(api_episode, show_config, hugo_data, output_dir):
 
                 "episode_number": episode_number,
                 "episode_number_padded": episode_number_padded,
-                "podcast_duration": get_duration(int(show_attachment['duration_in_seconds'])),
-                # TODO: the url in fireside is prefixed using https://chtbl.com not http://www.podtrac.com. Should this be left as is or changed to use podtrac?
-                "podcast_file": show_attachment["url"],
-                "podcast_bytes": show_attachment["size_in_bytes"],
-                # "url": api_episode["url"],
+                "podcast_duration": seconds_2_hhmmss_str(show_attachment['duration_in_seconds']),
+                "podcast_file": show_attachment["url"],  # using https://chtbl.com for tracking
+                "podcast_file_podtrack": jb_ep_data.get("mp3_audio", ""),
+                "podcast_file_ogg": jb_ep_data.get("ogg_audio", ""),
+                "podcast_bytes": show_attachment.get("size_in_bytes", ""),
 
-                "youtube_link": "",  # TODO: leave empty or use None?
-                "video_file": "",  # TODO: leave empty or use None?
+                "youtube_link": jb_ep_data.get("youtube", ""),
+                "video_file": jb_ep_data.get("video", ""),
+                "video_file_hd": jb_ep_data.get("hd_video", ""),
+                "video_file_mobile": jb_ep_data.get("mobile_video", ""),
+                "jb_legacy_url": jb_ep_data.get("jb_url", ""),
+
                 "links": links
             }
         )
 
         with open(output_file, "w") as f:
-            print("Saving", api_episode["url"])
+            Log.info(f"Saving episode from {api_episode['url']}")
             f.write(output)
-            
+
     except Exception as e:
-        print(f"ERROR | Failed to create an episode from url `{api_episode.get('url')}`. Exception: {e}")
+        Log.error(f"Failed to create an episode from url!",
+                  episode_url=api_episode.get('url'),
+                  exception=e)
+
 
 def parse_hosts(hugo_data, page_soup: BeautifulSoup, show_config, ep):
     show = show_config["acronym"]
@@ -162,12 +211,17 @@ def parse_hosts(hugo_data, page_soup: BeautifulSoup, show_config, ep):
             if host:
                 hosts.append(host["username"])
             else:
-                log_warn(show, ep, f"Missing HOST definition for `{host_name}`")
+                # Log.warn("Missing HOST definition",
+                #          show=show, ep=ep, host_name=host_name)
                 host_page_url = base_url + link.get("href")
                 MISSING_HOSTS.add(host_page_url)
                 hosts.append(get_username_from_url(host_page_url))
         except Exception as e:
-            print(f"ERROR | {show} {ep} | Failed to parse host for link href `{link.get('href')}`. Exception: {e}")
+            Log.error(f"Failed to parse HOST for link href!",
+                      show=show,
+                      ep=ep,
+                      href=link.get('href'),
+                      exception=e)
     return hosts
 
 
@@ -178,12 +232,12 @@ def parse_guests(hugo_data, page_soup, show_config, ep):
     guests = []
 
     # assumes the hosts are ALWAYS the first <ul> and guests are in the second one
-    hosts_list = page_soup.find("ul", class_="episode-hosts")  # <- this would always be the hosts list
+    # <- this would always be the hosts list
+    hosts_list = page_soup.find("ul", class_="episode-hosts")
     # look for the NEXT `ul.episode-hosts`, that should be the guests list (might not exist)
     guests_list = hosts_list.find_next("ul", class_="episode-hosts")
     if not guests_list:
         return guests
-    
     guests_links = guests_list.find_all("a")
     for link in guests_links:
         try:
@@ -199,14 +253,17 @@ def parse_guests(hugo_data, page_soup, show_config, ep):
             elif host_guest:
                 guests.append(host_guest["username"])
             else:
-                log_warn(show, ep, f"Missing GUEST definition for `{guest_name}`")
+                # Log.warn("Missing GUEST definition",
+                #          show=show, ep=ep, host_name=guest_name)
                 guest_page_url = base_url + link.get("href")
                 MISSING_GUESTS.add(guest_page_url)
                 guests.append(get_username_from_url(guest_page_url))
-        
+
         except Exception as e:
-            print(f"ERROR | {show} {ep} | Failed to parse episode guest for link href `{link.get('href')}`. Exception: {e}")
-        
+            Log.error(f"Failed to parse GUEST for link href!",
+                      show=show, ep=ep,
+                      href=link.get('href'),
+                      exception=e)
 
     return guests
 
@@ -215,7 +272,7 @@ def parse_sponsors(hugo_data, api_soup, page_soup, show, ep):
     # Get only the links of all the sponsors
     sponsors_ul = get_list(api_soup, "Sponsored By:")
     if not sponsors_ul:
-        log_warn(show, ep, "No sponsors found for this episode")
+        Log.warn("No sponsors found for this episode.", show=show, ep=ep)
         return []
 
     sponsors_links = [a["href"]
@@ -228,11 +285,12 @@ def parse_sponsors(hugo_data, api_soup, page_soup, show, ep):
             if s:
                 sponsors.append(s["shortname"])
             else:
-                log_warn(show, ep, f"Missing SPONSOR definition for `{sl}`")
+                # Log.warn("Missing SPONSOR definition",
+                #          show=show, ep=ep, sponsor_link=sl)
 
-                # Very ugly but works. The goal is to get the hostname of the sponsor link
-                # without the subdomain. It would fail on tlds like "co.uk" - But I don't
-                # think JB had any sponsors like that so it's fine.
+                # Very ugly but works. The goal is to get the hostname of the sponsor
+                # link without the subdomain. It would fail on tlds like "co.uk". but I
+                # don't think JB had any sponsors like that so it's fine.
                 sponsor_slug = ".".join(urlparse(sl).hostname.split(".")[-2:])
                 shortname = f"{sponsor_slug}-{show}".lower()
                 sponsors.append(shortname)
@@ -240,7 +298,8 @@ def parse_sponsors(hugo_data, api_soup, page_soup, show, ep):
                 filename = f"{shortname}.json"
 
                 # Find the <a> element on the page with the link
-                sponsor_a = page_soup.find("div", class_="episode-sponsors").find("a", attrs={"href": sl})
+                sponsor_a = page_soup.find(
+                    "div", class_="episode-sponsors").find("a", attrs={"href": sl})
                 if sponsor_a:
                     MISSING_SPONSORS.update({
                         filename: {
@@ -251,20 +310,21 @@ def parse_sponsors(hugo_data, api_soup, page_soup, show, ep):
                         }
                     })
         except Exception as e:
-            print(f"ERROR | {show} {ep} | Failed to collect/parse sponsor data for `{sl}`! Exception: {e}")
+            Log.error("Failed to collect/parse sponsor data!",
+                      show=show, ep=ep, exception=e)
 
     return sponsors
 
 
 def save_json_file(filename, json_obj, dest_dir):
-    mkdir_safe(dest_dir)
+    makedirs_safe(dest_dir)
 
     file_path = os.path.join(dest_dir, filename)
 
     with open(file_path, "w") as f:
         f.write(json.dumps(json_obj, indent=4))
 
-    print(f"Saved new json file `{file_path}`")
+    Log.debug("Saved new json file", file=file_path)
 
 
 def read_hugo_data():
@@ -284,7 +344,7 @@ def read_hugo_data():
     }
 
     for key, item in hugo_data.items():
-        files_dir = f"/hugo-data/{key}"
+        files_dir = f"{HUGO_DATA_DIR}/{key}"
         json_files = os.listdir(files_dir)
 
         for file in json_files:
@@ -294,16 +354,17 @@ def read_hugo_data():
                 data_key = json_data.get(item["_key"])
 
                 if not data_key:
-                    print(f"read_hugo_data: skipping file `{file_path}` since it "
-                          "doesn't have the expected key `{item._key}`")
+                    Log.error(f"read_hugo_data: Skipping file `{file_path}` since it "
+                              f"doesn't have the expected key `{item._key}`")
                     continue
 
                 item["_data"].update({data_key: json_data})
 
-    hugo_data_debug = json.dumps(hugo_data, indent=2)
-    print(f"read_hugo_data: {hugo_data_debug}")
+    # hugo_data_debug = json.dumps(hugo_data, indent=2)
+    # print(f"read_hugo_data: {hugo_data_debug}")
 
     return hugo_data
+
 
 def get_username_from_url(url):
     """
@@ -311,68 +372,70 @@ def get_username_from_url(url):
     """
     return urlparse(url).path.split("/")[-1]
 
+
 def create_host_or_guest(url, dirname):
     try:
         valid_dirnames = {"hosts", "guests"}
-        assert dirname in valid_dirnames, "dirname arg must be either `hosts` or `guests`"
+        assert dirname in valid_dirnames, "dirname arg must be one of `hosts`, `guests`"
 
         page_soup = BeautifulSoup(requests.get(url).content, "html.parser")
         
-        name = page_soup.find("h1").text.strip()
+        username = get_username_from_url(url)  
 
-        username = get_username_from_url(url)
+        show_url = url.split("/guests")[0]
 
-        # It's possible to replace url part "avatar_small.jpg" to "avatar.jpg" to get higher
-        # res img, but not sure if required.
-        avatar_url = page_soup.find("div", class_="hero-avatar").find("img").get("src")
-        resp = requests.get(avatar_url)
-        avatar_bytes = resp.content
-        file_ext = resp.headers.get("x-bz-file-name").split(".")[-1]
+        # From guests list page. Need this because sometimes the single guest page
+        # is missing info (e.g. all self-hosted guests)
+        guest_data = SHOW_GUESTS.get(show_url, {}).get(username, {})  
 
-        avatars_dir = os.path.join(DATA_ROOT_DIR, "static", "images", dirname)
-        mkdir_safe(avatars_dir)
-
-        filename = f"{username}.{file_ext}"
-        avatar_file = os.path.join(avatars_dir, filename)
-
-        with open(avatar_file, "wb") as f:
-            f.write(avatar_bytes)
-
+        name = parse_name(page_soup, username, guest_data)
+        
+        filename = save_avatar_img(dirname, page_soup, username, guest_data)
 
         # Get social links
 
-        homepage = None
-        twitter = None
-        linkedin = None
-        instagram = None
-        gplus = None
-        youtube = None
-        links = page_soup.find("nav", class_="links").find_all("a")
-
-        # NOTE: This will work only if none of the links are shortened urls
-        for link in links:
-            href = link.get("href").lower()
-            if "Website" in link.text:
-                homepage = href
-            elif "twitter" in href:
-                twitter = href
-            elif "linkedin" in href:
-                linkedin = href
-            elif "instagram" in href:
-                instagram = href
-            elif "google" in href:
-                gplus = href
-            elif "youtube" in href:
-                youtube = href
+        homepage = ""
+        twitter = ""
+        linkedin = ""
+        instagram = ""
+        gplus = ""
+        youtube = ""
+        nav = page_soup.find("nav", class_="links")
+        if nav:
+            links = nav.find_all("a")
+                
+            # NOTE: This will work only if none of the links are shortened urls
+            for link in links:
+                href = link.get("href").lower()
+                if "Website" in link.text:
+                    homepage = href
+                elif "twitter" in href:
+                    twitter = href
+                elif "linkedin" in href:
+                    linkedin = href
+                elif "instagram" in href:
+                    instagram = href
+                elif "google" in href:
+                    gplus = href
+                elif "youtube" in href:
+                    youtube = href
+        
+        bio = ""
+        _bio = page_soup.find("section")
+        if _bio:
+            bio = _bio.text.strip()
 
         host_json = {
-            "username": username, # e.g. "alexktz"
-            "name": name, # e.g. "Alex Kretzschmar"
-            "bio":  page_soup.find("section").text.strip(), # e.g. "Red Hatter. Drone Racer. Photographer. Dog lover."
-            "avatar":  f"/images/{dirname}/{filename}", # e.g. "/images/guests/alex_kretzschmar.jpeg"
-            "homepage": homepage, # e.g. "https://www.linuxserver.io/"
-            "twitter": twitter, # e.g. "https://twitter.com/ironicbadger"
-            "linkedin": linkedin, # e.g. "https://www.linkedin.com/in/alex-kretzschmar/""
+            "username": username,  # e.g. "alexktz"
+            "name": name,  # e.g. "Alex Kretzschmar"
+            # e.g. "Red Hatter. Drone Racer. Photographer. Dog lover."
+            "bio":  bio,
+            # e.g. "/images/guests/alex_kretzschmar.jpeg"
+            "avatar":  f"/images/{dirname}/{filename}" if filename else "",
+            "homepage": homepage,  # e.g. "https://www.linuxserver.io/"
+            "twitter": twitter,  # e.g. "https://twitter.com/ironicbadger"
+            # e.g. "https://www.linkedin.com/in/alex-kretzschmar/""
+            "linkedin": linkedin,
             "instagram": instagram,
             "gplus": gplus,
             "youtube": youtube,
@@ -381,7 +444,50 @@ def create_host_or_guest(url, dirname):
         hosts_dir = os.path.join(DATA_ROOT_DIR, "data", dirname)
         save_json_file(f"{username}.json", host_json, hosts_dir)
     except Exception as e:
-        print(f"ERROR | Failed to create/save a new host/guest file from `{url}`. Exception: {e}")
+        Log.error("Failed to create/save a new host/guest file!",
+                  url=url, exception=e)
+
+def save_avatar_img(dirname, page_soup, username, guest_data):
+    """Returns the `filename` is all is successfully downloaded, None otherwise"""
+    try:
+        avatar_url = get_avatar_url(page_soup, guest_data)
+            
+        if avatar_url:
+            avatars_dir = os.path.join(DATA_ROOT_DIR, "static", "images", dirname)
+            makedirs_safe(avatars_dir)
+
+            filename = f"{username}.jpg"
+            avatar_file = os.path.join(avatars_dir, filename)
+
+            with open(avatar_file, "wb") as f:
+                f.write(requests.get(avatar_url).content)
+
+            return filename
+    except Exception as e:
+        Log.error("Failed to save avatar!", username=username, exception=e)
+
+
+def get_avatar_url(page_soup, guest_data):
+    avatar_url = None
+    if guest_data:
+        avatar_url = guest_data.get("avatar")
+    else:
+        avatar_div = page_soup.find("div", class_="hero-avatar")
+        if avatar_div:
+            avatar_url = avatar_div.find("img").get("src")
+    return avatar_url
+
+
+def parse_name(page_soup, username, guest_data):
+    # Fallback name to be to username
+    name = username
+
+    name_h1 = page_soup.find("h1")
+    if name_h1:
+        name = name_h1.text.strip()
+    elif guest_data: 
+        name = guest_data.get("name", username)
+    return name
 
 
 def main():
@@ -391,49 +497,238 @@ def main():
     hugo_data = read_hugo_data()
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        for show_slug, show_config in shows.items():
-            # Use same structure as in the root project for easy copy over
-            output_dir = os.path.join(
-                DATA_ROOT_DIR, "content", "show", show_slug)
-            mkdir_safe(output_dir)
+        # Must be first. Here the JB_DATA global is populated
+        scrape_data_from_jb(shows, executor)
 
-            api_data = requests.get(
-                show_config['fireside_url'] + "/json").json()
+        # save to a json file - this might be useful for files migrations
+        jb_file = os.path.join(DATA_ROOT_DIR, "jb_all_shows_links.json")
+        with open(jb_file, "w") as f:
+            f.write(json.dumps(JB_DATA, indent=2))
 
-            for idx, api_episode in enumerate(api_data["items"]):
-                futures.append(executor.submit(
-                    create_episode, api_episode, show_config, hugo_data, output_dir))
+        scrape_episodes_from_fireside(shows, hugo_data, executor)
+
+        # Must come after scrape_episodes_from_fireside where the MISSING_* globals
+        # are set
+        scrape_hosts_guests_and_sponsors(shows, executor)
+
+    Log.info(">>> 🔥🔥🔥 ALL DONE :) 🔥🔥🔥\n\n")
+
+def scrape_data_from_jb(shows, executor):
+    Log.info(">>> Scraping data from jupiterbroadcasting.com...")
+
+    # Collect all links for epsidoe page of each show into JB_DATA
+    futures = []
+    for show_slug, show_config in shows.items():
+        show_base_url = show_config["jb_url"]
+        futures.append(executor.submit(
+            jb_populate_episodes_urls, show_slug, show_base_url))
+    for future in concurrent.futures.as_completed(futures):
+        future.result()
+
+    Log.info(">>> Finished collecting all episode page urls") 
+
+    # Scrape each page for data
+    futures = []
+    for show, show_episodes in JB_DATA.items():
+        for ep, ep_data in show_episodes.items():
+            futures.append(executor.submit(
+                jb_populate_direct_links_for_episode, ep_data, show, ep))
+    for future in concurrent.futures.as_completed(futures):
+        future.result()
+
+    Log.info(">>> Finished scraping data from jupiterbroadcasting.com ✓")
+
+def jb_populate_direct_links_for_episode(ep_data, show, ep):
+    try:
+        ep_soup = BeautifulSoup(requests.get(
+            ep_data["jb_url"]).content, "html.parser")
+        dd_div = ep_soup.find("div", attrs={"id": "direct-downloads"})
+        if dd_div:
+            dl_links = dd_div.find_all("a")
+        else:
+            # older episodes have different structure.
+            p_links = get_list(ep_soup, "Direct Download:", "h3", "p")
+            if p_links:
+                dl_links = p_links.find_all("a")
+            else:
+                Log.warn("Failed to find Direct Download links for the episode.",
+                         show=show, ep=ep)
+                return
+
+        for dl_link in dl_links:
+            url = dl_link.get("href").strip("\\\"")
+            slug = dl_link.text.lower().replace(" ", "_")
+            ep_data.update({
+                slug: url
+            })
+    except Exception as e:
+        Log.error("Failed to parse direct links for episode.",
+                  show=show, ep=ep, exception=e)
+
+
+def jb_populate_episodes_urls(show_slug, show_base_url):
+    show_data = {}
+    JB_DATA.update({show_slug: show_data})
+
+    page_soup = BeautifulSoup(requests.get(
+        show_base_url).content, "html.parser")
+    pages_span = page_soup.find("span", class_="pages")
+    if pages_span:
+        last_page = pages_span.text.split(" ")[-1]
+        last_page = int(last_page)
+    else:
+        last_page = 1  # Just one page
+
+    for page in range(1, last_page+1):
+        if page > 1:
+            page_url = f"{show_base_url}/page/{page}/"
+            page_soup = BeautifulSoup(requests.get(
+                page_url).content, "html.parser")
+
+        videoitems = page_soup.find_all("div", class_="videoitem")
+        for idx, item in enumerate(videoitems):
+            try:
+                link = item.find("a")
+                link_href = link.get("href")
+                ep_num = link.get("title").split(" ")[-1]
+
+                if ep_num == "LU1":
+                    # LUP edge case for ep 1
+                    ep_num = 1
+                if link.get("title") == "Goodbye from Linux Action News":
+                    # LAN edge case. This episode is between ep152 and 153, hence it
+                    # shall be offically titled as episode 152.5 for now forth
+                    # (hopefully having floaty number won't brake things 😛)
+
+                    # TODO create the episode file for this, cuz it's not in fireside
+                    ep_num = 152.5
+                # Some coder exceptins
+                if link.get("title") == "Say My Functional Name | Coder Radio":
+                    ep_num = 343
+                if link.get("title") == "New Show! | Coder Radio":
+                    ep_num = 0
+                else:
+                    ep_num = int(ep_num)
+
+                show_data.update({ep_num: {
+                    "jb_url": link_href
+                }})
+            except Exception as e:
+                Log.error("Failed to get episode page link and number from JB site.",
+                      show=show_slug, exception=e, page=page, ep_idx=idx, html=item.string)
+
+
+def scrape_hosts_guests_and_sponsors(shows, executor):
+    output_dir = os.path.join(DATA_ROOT_DIR, "data", "sponsors")
+    makedirs_safe(output_dir)
+    
+    scrape_show_guests_page(shows)  # into the SHOW_GUESTS global variable
+
+    futures = []
+    
+    # MISSING_SPONSORS:
+    for filename, sponsor in MISSING_SPONSORS.items():
+        futures.append(executor.submit(
+            save_json_file, filename, sponsor, output_dir))
+
+    # MISSING_HOSTS:
+    for url in MISSING_HOSTS:
+        futures.append(executor.submit(create_host_or_guest, url, "hosts"))
+
+    # MISSING_GUESTS:
+    for url in MISSING_GUESTS:
+        futures.append(executor.submit(create_host_or_guest, url, "guests"))
+
+    # Drain to get exceptions. Still have to mash CTRL-C, though.
+    for future in concurrent.futures.as_completed(futures):
+        future.result()
+
+    # Log.debug("MISSING_SPONSORS:", json=json.dumps(MISSING_SPONSORS.keys(), indent=2))
+    # Log.debug("MISSING_HOSTS:", json=json.dumps(list(MISSING_HOSTS), indent=2))
+    # Log.debug("MISSING_GUESTS:", json=json.dumps(list(MISSING_GUESTS), indent=2))
+
+
+def scrape_show_guests_page(shows):
+    # no need to do thread since there's only a handful number of shows
+    for show_slug, show_data in shows.items():
+        all_guests_url = f"{show_data['fireside_url']}/guests"
+        guests_soup = BeautifulSoup(requests.get(all_guests_url).content, "html.parser")
+        links = guests_soup.find("ul", class_="show-guests").find_all("a")
+
+        for l in links:
+            username = l.get("href").rstrip("/").split("/")[-1]
+            name = l.find("h5").text.strip()
+            avatar_sm = l.find("img").get("src").split("?")[0]
+            avatar = avatar_sm.replace("_small.jpg", ".jpg")
+
+            this_show_guests = SHOW_GUESTS.get(show_data['fireside_url'], {})
+            this_show_guests.update({
+                username: {
+                    "username": username,
+                    "name": name,
+                    "avatar_sm": avatar_sm,
+                    "avatar": avatar
+                }
+            })
+            SHOW_GUESTS.update({show_data['fireside_url']: this_show_guests})
+
+def scrape_episodes_from_fireside(shows, hugo_data, executor):
+    Log.info(">>> Scraping data from fireside...")
+
+    futures = []
+    for show_slug, show_config in shows.items():
+        # Use same structure as in the root project for easy copy over
+        output_dir = os.path.join(
+            DATA_ROOT_DIR, "content", "show", show_slug)
+        makedirs_safe(output_dir)
+
+        api_data = requests.get(
+            show_config['fireside_url'] + "/json").json()
+
+        for idx, api_episode in enumerate(api_data["items"]):
+            futures.append(executor.submit(
+                create_episode, api_episode, show_config,
+                show_slug, hugo_data, output_dir
+            ))
 
         # Drain to get exceptions. This is important in order to collect all the
         # MISSING_* globals first before proceeding
-        for future in concurrent.futures.as_completed(futures):
-            future.result()
+    for future in concurrent.futures.as_completed(futures):
+        future.result()
+    Log.info(">>> Finished scraping from fireside ✓")
 
-        # Now process the MISSING_* globals...
+class Log:
 
-        output_dir = os.path.join(DATA_ROOT_DIR, "data", "sponsors")
-        mkdir_safe(output_dir)
+    @staticmethod
+    def log(lvl, msg, show=None, ep=None, **kwargs):
+        out = f"{lvl} | "
+        if show:
+            out += f"{show} "
+            if ep:
+                out += f"{ep} "
+            out += "| "
+        out += f"{msg} "
+        for k, v in kwargs.items():
+            out += f"\n  {k}: `{v}`"
+        print(out)
 
-        futures = []  # reset futures
+    @staticmethod
+    def error(msg, show=None, ep=None, **kwargs):
+        Log.log("ERROR", msg, show=show, ep=ep, **kwargs)
 
-        # MISSING_SPONSORS:
-        for filename, sponsor in MISSING_SPONSORS.items():
-            futures.append(executor.submit(
-                save_json_file, filename, sponsor, output_dir))
+    @staticmethod
+    def warn(msg, show=None, ep=None, **kwargs):
+        Log.log("WARN", msg, show=show, ep=ep, **kwargs)
 
-        # MISSING_HOSTS:
-        for url in MISSING_HOSTS:
-            futures.append(executor.submit(create_host_or_guest, url, "hosts"))
+    @staticmethod
+    def debug(msg, show=None, ep=None, **kwargs):
+        Log.log("DEBUG", msg, show=show, ep=ep, **kwargs)
 
-        # MISSING_GUESTS:
-        for url in MISSING_GUESTS:
-            futures.append(executor.submit(create_host_or_guest, url, "guests"))
-
-        # Drain to get exceptions. Still have to mash CTRL-C, though.
-        for future in concurrent.futures.as_completed(futures):
-            future.result()
+    @staticmethod
+    def info(msg, show=None, ep=None, **kwargs):
+        Log.log("INFO", msg, show=show, ep=ep, **kwargs)
 
 
 if __name__ == "__main__":
+    Log.info("🚀🚀🚀 SCRAPER STARTED! 🚀🚀🚀")
     main()

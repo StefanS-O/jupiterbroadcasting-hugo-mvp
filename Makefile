@@ -18,6 +18,6 @@ scrape: scrape-clean
 
 # Copy contents of the scraped-data into the project
 scrape-copy:
-	./scrape-copy.sh && ./generate-guests-symlinks.sh
+	cp -a ./scraped-data/* . && ./generate-guests-symlinks.sh
 
 scrape-full: scrape scrape-copy
