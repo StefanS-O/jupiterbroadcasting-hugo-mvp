@@ -2,6 +2,7 @@
   <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet" />
   <script src="//cdn.podlove.org/web-player/5.x/embed.js"></script>
 {{end}}
+
 {{ define "main" }}
   <div class="container">
       <div class="content">
@@ -46,11 +47,13 @@
             <div class="container">
                <div class="columns is-multiline">
                 {{ range $index, $guestname := . }}
-                  {{ $guest := index $.Site.Data.guests $guestname }}
+                    {{ $guest := index $.Site.Data.guests $guestname }}
                     <div class="column is-6 is-4-fullhd is-4-desktop is-12-mobile"  style="display: flex;">
-                      {{ partial "guests/small.html" (dict "context" . "guest" $guest) }}
+                      {{ if $guest }}
+                        {{ partial "guests/small.html" (dict "context" . "guest" $guest) }}
+                      {{ end }}
                     </div>
-                {{ end }}
+                {{end}}
               </div>
             </div>
           </section>
@@ -69,7 +72,9 @@
               {{ range $index, $sponsorname := . }}
                 {{ $sponsor := index $.Site.Data.sponsors $sponsorname }}
                   <div class="column is-6 is-4-fullhd is-4-desktop is-12-mobile"  style="display: flex;">
-                    {{ partial "sponsor/small.html" (dict "context" . "sponsor" $sponsor) }}
+                    {{ if $sponsor }}
+                      {{ partial "sponsor/small.html" (dict "context" . "sponsor" $sponsor) }}
+                    {{ end }}
                   </div>
               {{ end }}
             </div>
