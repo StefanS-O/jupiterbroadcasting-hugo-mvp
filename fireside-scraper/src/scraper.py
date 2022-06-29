@@ -133,7 +133,10 @@ def create_episode(api_episode,
 
         tags = []
         for link in page_soup.find_all("a", class_="tag"):
-            tags.append(link.get_text().strip())
+            _tag = link.get_text().strip()
+            # escape inner quotes (occures in coderradio 434)
+            _tag = _tag.replace("\"", "\\\"")
+            tags.append(_tag)
 
         tags = sorted(tags)
 
