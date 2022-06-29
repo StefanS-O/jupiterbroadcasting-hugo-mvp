@@ -597,9 +597,11 @@ def jb_populate_episodes_urls(show_slug, show_base_url):
                     # LUP edge case for ep 1
                     ep_num = 1
                 if link.get("title") == "Goodbye from Linux Action News":
-                    # LAN edge case. This ~2 message is between ep152 and 153, hence it
+                    # LAN edge case. This episode is between ep152 and 153, hence it
                     # shall be offically titled as episode 152.5 for now forth
                     # (hopefully having floaty number won't brake things 😛)
+
+                    # TODO create the episode file for this, cuz it's not in fireside
                     ep_num = 152.5
                 # Some coder exceptins
                 if link.get("title") == "Say My Functional Name | Coder Radio":
