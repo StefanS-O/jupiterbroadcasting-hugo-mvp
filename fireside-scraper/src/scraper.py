@@ -238,7 +238,6 @@ def parse_guests(hugo_data, page_soup, show_config, ep):
     guests_list = hosts_list.find_next("ul", class_="episode-hosts")
     if not guests_list:
         return guests
-
     guests_links = guests_list.find_all("a")
     for link in guests_links:
         try:
