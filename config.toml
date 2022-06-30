@@ -1,8 +1,10 @@
-baseURL = 'http://localhost:1111/'
+baseURL = 'https://jb.codefighters.net/'
 languageCode = 'en-us'
 title = 'Jupiter Broadcasting'
 
 theme = 'jb'
+
+paginate = 12
 
 # Allow HTML in Markdown
 [markup]
