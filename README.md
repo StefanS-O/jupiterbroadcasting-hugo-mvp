@@ -1,6 +1,6 @@
 # Jupiter Broadcasting MVP
 
-Build with Hugo and deployed with Github Actions
+Built with Hugo and deployed with Github Actions
 
 Demo: https://jb.codefighters.net
 
@@ -12,7 +12,7 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 * Complete publishing workflow using Github and Github Actions
 * Template using SCSS (without node dependencies using Hugo extended)
 * only Vanilla JS is used (single files with concat workflow)
-* Highly configurable with config.toml and config folder
+* Highly configurable with `config.toml` and config folder
 * Hosts (via data folder and frontmatter)
 * Video player
 * HTML5 audio player
@@ -22,12 +22,9 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 * Sponsors (via data folder and frontmatter)
 
 ## ToDo
+Wishlist of features and work-to-be-done tracked here:
+https://github.com/StefanS-O/jupiterbroadcasting-hugo-mvp/issues
 
-* RSS feed generation
-* Search Function (probably Lunr)
-* Contact Form (?)
-* adding more content
-* write better docs
 
 ## Setup
 
@@ -35,7 +32,7 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 
 Install Hugo: https://gohugo.io/getting-started/installing/
 
-Start the development Server (rebuild on every filesystem change)
+Start the development Server (rebuilds on every filesystem change)
 
 `hugo server -D`
 
@@ -52,7 +49,6 @@ to clean the module config
 
 `hugo mod clean --all`
 
-
 build
 
 `hugo -D --config config.coderradio.toml`
@@ -67,14 +63,14 @@ so for now only subdirectories work
 
 Deployment is done with Github Actions, see workflow file in `.github/workflows/main.yml`
 At the moment it is only triggered when something in the `main` branch is changing, but it can also be set up to run at certain times.
-This would also enable scheduled publishing, since Hugo per default only build pages which have set `date` in frontmatter to <= `now`
+This would also enable scheduled publishing, since Hugo per default only builds pages which have set `date` in frontmatter to <= `now`
 
 
 ## Fireside Scraper
 
 The [fireside-scraper](./fireside-scraper/) is based on [JB Show Notes](https://github.com/selfhostedshow/show-notes) that was written by [ironicbadger](https://github.com/ironicbadger).
 
-It goes over all the JB firside shows and scrapes the episodes into the format that is expected by hugo for each episode (using [this template](./fireside-scraper/src/templates/episode.md.j2)).
+It goes over all the JB Fireside shows and scrapes the episodes into the format that is expected by hugo for each episode (using [this template](./fireside-scraper/src/templates/episode.md.j2)).
 
 Besides the episodes it also scrapes and creates the json files for:
 
@@ -82,7 +78,7 @@ Besides the episodes it also scrapes and creates the json files for:
 - hosts
 - guests (every host is symlinked into the [guests dir](./data/guests/) since a host of one show, could be a guest on an episode of a different show)
 
-There are makefile commands that should me used to run it.
+There are makefile commands that should be used to run it.
 
 ### Run the scraper
 
@@ -115,4 +111,4 @@ Mainly the RSS feed generation and managing of hosts / guests.
 
 - [ironicbadger](https://github.com/ironicbadger) and [JB Show Notes](https://github.com/selfhostedshow/show-notes) project which was used as the base for the `fireside-scraper`
 
-Time spend so far: 13h
+Time spend so far: 13h+
