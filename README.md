@@ -23,11 +23,8 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 
 ## ToDo
 
-* RSS feed generation
-* Search Function (probably Lunr)
-* Contact Form (?)
-* adding more content
-* write better docs
+https://github.com/StefanS-O/jupiterbroadcasting-hugo-mvp/issues
+
 
 ## Setup
 
