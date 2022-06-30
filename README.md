@@ -22,7 +22,7 @@ https://github.com/JupiterBroadcasting/jupiterbroadcasting.com/discussions/8#dis
 * Sponsors (via data folder and frontmatter)
 
 ## ToDo
-
+Wishlist of features and work-to-be-done tracked here:
 https://github.com/StefanS-O/jupiterbroadcasting-hugo-mvp/issues
 
 
