@@ -1,5 +1,9 @@
 # Jupiter Broadcasting MVP
 
+Development has moved to:
+
+https://github.com/JupiterBroadcasting/jupiterbroadcasting.com
+
 Built with Hugo and deployed with Github Actions
 
 Demo: https://jb.codefighters.net
